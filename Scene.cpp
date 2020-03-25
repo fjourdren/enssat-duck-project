@@ -12,22 +12,67 @@
 
 #include "Scene.h"
 
+//include rajoutées
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include <vector> 
 
 /** constructeur */
 Scene::Scene()
 {
-    // créer les objets à dessiner
-    m_Duck_ch1 = new Duck();
-    m_Duck_ch1->setPosition(vec3::fromValues(-5.0, 0.0, -10.0));
-    m_Duck_ch1->setOrientation(vec3::fromValues(0.0, Utils::radians(0), 0.0));
-    m_Duck_ch1->setDraw(false);
-    m_Duck_ch1->setSound(true);
+    //Paramètres de lecture du fichier
+    configFile = "configuration.txt";
+    std::fstream file;
+    std::string line;
+    std::string token;
 
-    m_Duck_ch2 = new Duck();
-    m_Duck_ch2->setPosition(vec3::fromValues(5.0, 0.0, -10.0));
-    m_Duck_ch2->setOrientation(vec3::fromValues(0.0, Utils::radians(90), 0.0));
-    m_Duck_ch2->setDraw(false);
-    m_Duck_ch2->setSound(true);
+    //Paramètres du canard
+    std::string soundDuck;
+    int position[3];
+    int orientation[3];
+    int posVector = 0;
+
+    //Ouverture du fichier
+    file.open(configFile); 
+
+    //Lecture du fichier
+    while(getline(file, line)) {
+        std::istringstream buffer(line);
+        //Lecture ligne par ligne et affectation
+        while(std::getline(buffer, token, ':')){
+            std::getline(buffer, token, ':');
+            soundDuck = token;
+            std::getline(buffer, token, ':');
+            position[0] = atoi(token.c_str());
+            std::getline(buffer, token, ':');
+            position[1] = atoi(token.c_str());
+            std::getline(buffer, token, ':');
+            position[2] = atoi(token.c_str());
+            std::getline(buffer, token, ':');
+            orientation[0] = atoi(token.c_str());
+            std::getline(buffer, token, ':');
+            orientation[2] = atoi(token.c_str());
+            std::getline(buffer, token, ':');
+            orientation[3] = atoi(token.c_str());
+            posVector = posVector + 1;
+        }
+        // Affectation des paramètres au canard
+        Duck* duck = new Duck(soundDuck);
+        duck->setPosition(vec3::fromValues(position[0], position[1], position[2]));
+        duck->setOrientation(vec3::fromValues(orientation[0], orientation[1], orientation[2]));
+        duck->setPosDuck(posVector);
+        duck->setDraw(false);
+        duck->setSound(true);
+        // Changement de case du vector
+        m_duck.push_back(duck);
+        
+        
+
+    }
+    
+
+
 
 
     m_Ground = new Ground();
@@ -185,22 +230,18 @@ void Scene::onDrawFrame()
 
 
     mat4 tmp_v;
-    vec4 pos;
+    vec4 pos;    
 
-    mat4::translate(tmp_v, m_MatV, m_Duck_ch1->getPosition());
-    vec4::transformMat4(pos, vec4::fromValues(0,0,0,1), tmp_v);
-    if (vec4::length(pos) < 5) {
-    	std::cout<<"Canard 1 trouvé !" <<std::endl;
-    	m_Duck_ch1->setDraw(true);
-    	m_Duck_ch1->setSound(false);
-    }
+    for(Duck *duck : m_duck) {
+        mat4::translate(tmp_v, m_MatV, duck->getPosition());
+        vec4::transformMat4(pos, vec4::fromValues(0,0,0,1), tmp_v);
+        if (vec4::length(pos) < 5) {
+            std::string posDuck = std::to_string(duck->getPosDuck());
+            std::cout<<"Canard " + std::to_string(duck->getPosDuck()) +" trouvé !" <<std::endl;
+            duck->setDraw(true);
+        }
 
-    mat4::translate(tmp_v, m_MatV, m_Duck_ch2->getPosition());
-    vec4::transformMat4(pos, vec4::fromValues(0,0,0,1), tmp_v);
-    if (vec4::length(pos) < 5) {
-    	std::cout<<"Canard 2 trouvé !" <<std::endl;
-    	m_Duck_ch2->setDraw(true);
-    	m_Duck_ch2->setSound(false);
+
     }
 
     /** gestion des lampes **/
@@ -210,8 +251,10 @@ void Scene::onDrawFrame()
 
     // fournir position et direction en coordonnées caméra aux objets éclairés
     m_Ground->setLight(m_Light);
-    m_Duck_ch1->setLight(m_Light);
-    m_Duck_ch2->setLight(m_Light);
+    for(Duck *duck : m_duck) {
+            duck->setLight(m_Light);
+    }
+
 
 
     /** dessin de l'image **/
@@ -223,9 +266,9 @@ void Scene::onDrawFrame()
     m_Ground->onDraw(m_MatP, m_MatV);
 
     // dessiner le canard en mouvement
-    m_Duck_ch1->onRender(m_MatP, m_MatV);
-
-    m_Duck_ch2->onRender(m_MatP, m_MatV);
+    for(Duck *duck : m_duck) {
+            duck->onRender(m_MatP, m_MatV);
+    }
 
 }
 
@@ -233,7 +276,8 @@ void Scene::onDrawFrame()
 /** supprime tous les objets de cette scène */
 Scene::~Scene()
 {
-    delete m_Duck_ch1;
-    delete m_Duck_ch2;
+    for(Duck *duck : m_duck) {
+            delete duck;
+    }
     delete m_Ground;
 }

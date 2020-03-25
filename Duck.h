@@ -26,12 +26,17 @@ private:
     /** position 3D du cube */
     vec3 m_Orientation;
 
+    /** position du canard dans le vector*/
+    int posDuck;
+
     bool m_Draw, m_Sound;
 
 public:
 
     /** constructeur, crée le maillage */
     Duck();
+    //Constructeur avec le changement de son du canard
+    Duck(std::string sound);        
 
     /** destructeur, libère le maillage et l'audio */
     ~Duck();
@@ -66,6 +71,16 @@ public:
      * @param vec3 pos position
      */
     void setOrientation(vec3 ori);
+
+    /**
+     * Récupérer la position dans le vector du canard
+    */
+    int getPosDuck();
+
+    /**
+     * Affecte la position dans le vector du canard
+    */
+    void setPosDuck(int );
 
     /**
      * modifie la propriete d'affichage

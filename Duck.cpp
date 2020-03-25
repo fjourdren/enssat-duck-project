@@ -21,8 +21,8 @@ using namespace mesh;
 
 
 /** constructeur */
-Duck::Duck(): Mesh("Duck")
-{
+Duck::Duck(std::string sound): Mesh("Duck")
+{//std::string sound;
     // matériaux
     m_Material = new MaterialTexture("data/10602_Rubber_Duck_v1_diffuse.jpg");
     setMaterials(m_Material);
@@ -43,7 +43,8 @@ Duck::Duck(): Mesh("Duck")
     computeNormals();
 
     // ouverture du flux audio à placer dans le buffer
-    std::string soundpathname = "data/Duck-quacking-sound.wav";
+    //std::string soundpathname = "data/Duck-quacking-sound.wav";
+    std::string soundpathname = sound;
     buffer = alutCreateBufferFromFile(soundpathname.c_str());
     if (buffer == AL_NONE) {
         std::cerr << "unable to open file " << soundpathname << std::endl;
@@ -66,7 +67,7 @@ Duck::Duck(): Mesh("Duck")
     alSourcef(source, AL_CONE_OUTER_ANGLE, 30);
     // à l'extérieur de [-outer/2,outer/2] il y a une attenuation totale
 
-    alDistanceModel(AL_NONE);
+    alDistanceModel(AL_LINEAR_DISTANCE_CLAMPED);
 }
 
 
@@ -150,6 +151,16 @@ vec3& Duck::getOrientation()
 void Duck::setOrientation(vec3 ori)
 {
     vec3::copy(m_Orientation, ori);
+}
+
+int Duck::getPosDuck()
+{
+    return posDuck;
+}
+
+void Duck::setPosDuck(int position)
+{
+    posDuck = position;
 }
 
 
