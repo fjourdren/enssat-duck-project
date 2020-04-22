@@ -4,8 +4,8 @@
 #include <mutex>
 #include <vector>
 
-#include "Flag.hpp"
-#include "Consts.hpp"
+#include "Flag.h"
+#include "Consts.h"
 
 class GameManager {
     public:

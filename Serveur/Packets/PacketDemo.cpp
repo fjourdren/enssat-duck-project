@@ -2,11 +2,11 @@
 #include <stdio.h>
 #include <string>
 
-#include "Packet.hpp"
-#include "PacketDemo.hpp"
-#include "../ClientSession.hpp"
+#include "Packet.h"
+#include "PacketDemo.h"
+#include "../ClientSession.h"
 
-#include "../Consts.hpp"
+#include "../Consts.h"
 
 PacketDemo::PacketDemo(unsigned int idSender, std::string message) : Packet("PacketDemo"), _idSender(idSender), _message(message) {
 

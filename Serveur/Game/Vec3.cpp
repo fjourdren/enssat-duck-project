@@ -1,4 +1,4 @@
-#include "Vec3.hpp"
+#include "Vec3.h"
 
 // classe très simple pour stocker les vecteurs 3 côté serveur (sans avoir à importer de lourdes bibliothèques)
 Vec3::Vec3() {

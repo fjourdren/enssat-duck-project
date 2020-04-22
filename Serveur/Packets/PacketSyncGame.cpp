@@ -2,12 +2,12 @@
 #include <stdio.h>
 #include <string>
 
-#include "Packet.hpp"
-#include "PacketSyncGame.hpp"
+#include "Packet.h"
+#include "PacketSyncGame.h"
 
-#include "../ClientSession.hpp"
-#include "../Consts.hpp"
-#include "../Game/Consts.hpp"
+#include "../ClientSession.h"
+#include "../Consts.h"
+#include "../Game/Consts.h"
 
 PacketSyncGame::PacketSyncGame(unsigned int seconds, GameState state) : Packet("syncGame"), _seconds(seconds), _state(state) {
 
