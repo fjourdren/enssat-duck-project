@@ -4,8 +4,8 @@
 #include <string>
 #include <vector>
 
-#include "ClientSession.hpp"
-#include "./Packets/Packet.hpp"
+#include "ClientSession.h"
+#include "./Packets/Packet.h"
 
 class Handler {
     public:

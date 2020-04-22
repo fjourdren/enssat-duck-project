@@ -13,10 +13,10 @@
 
 #include <string.h>
 
-#include "TCPServerSocket.hpp"
-#include "ClientSession.hpp"
+#include "TCPServerSocket.h"
+#include "ClientSession.h"
 
-#include "Consts.hpp"
+#include "Consts.h"
 
 TCPServerSocket::TCPServerSocket(int port): _port(port) {
     

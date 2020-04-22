@@ -3,8 +3,8 @@
 
 #include <string>
 
-#include "Packet.hpp"
-#include "../ClientSession.hpp"
+#include "Packet.h"
+#include "../ClientSession.h"
 
 class PacketInitConnection : public Packet {
     public:

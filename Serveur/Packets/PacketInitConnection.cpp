@@ -2,11 +2,11 @@
 #include <stdio.h>
 #include <string>
 
-#include "Packet.hpp"
-#include "PacketInitConnection.hpp"
-#include "../ClientSession.hpp"
+#include "Packet.h"
+#include "PacketInitConnection.h"
+#include "../ClientSession.h"
 
-#include "../Consts.hpp"
+#include "../Consts.h"
 
 PacketInitConnection::PacketInitConnection(unsigned int idSender) : Packet("initConnection"), _idSender(idSender) {
 

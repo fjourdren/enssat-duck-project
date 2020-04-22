@@ -3,11 +3,11 @@
 
 #include <string>
 
-#include "Packet.hpp"
+#include "Packet.h"
 
-#include "../ClientSession.hpp"
-#include "../Consts.hpp"
-#include "../Game/Consts.hpp"
+#include "../ClientSession.h"
+#include "../Consts.h"
+#include "../Game/Consts.h"
 
 class PacketSyncGame : public Packet {
     public:

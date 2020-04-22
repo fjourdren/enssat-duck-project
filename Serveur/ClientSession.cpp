@@ -5,15 +5,15 @@
 #include <sys/socket.h>
 #include <thread>
 
-#include "TCPServerSocket.hpp"
-#include "ClientSession.hpp"
-#include "Handler.hpp"
-#include "Utils.hpp"
+#include "TCPServerSocket.h"
+#include "ClientSession.h"
+#include "Handler.h"
+#include "Utils.h"
 
-#include "Consts.hpp"
+#include "Consts.h"
 
-#include "Packets/PacketInitConnection.hpp"
-#include "Packets/PacketSyncGame.hpp"
+#include "Packets/PacketInitConnection.h"
+#include "Packets/PacketSyncGame.h"
 
 using namespace std;
 

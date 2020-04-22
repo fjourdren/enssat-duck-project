@@ -7,13 +7,13 @@
 #include <vector>
 #include <string.h>
 
-#include "Handler.hpp"
-#include "ClientSession.hpp"
+#include "Handler.h"
+#include "ClientSession.h"
 
-#include "Consts.hpp"
+#include "Consts.h"
 
-#include "./Packets/Packet.hpp"
-#include "./Packets/PacketDemo.hpp"
+#include "./Packets/Packet.h"
+#include "./Packets/PacketDemo.h"
 
 // reconstruit le message en objet puis exécute les actions
 void Handler::handle(ClientSession* cs, std::string message) {

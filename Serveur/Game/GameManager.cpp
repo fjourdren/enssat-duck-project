@@ -3,8 +3,8 @@
 #include <mutex>
 #include <time.h>
 
-#include "GameManager.hpp"
-#include "Consts.hpp"
+#include "GameManager.h"
+#include "Consts.h"
 
 // Redémarrage du timer de la partie
 void GameManager::restartCounter() {

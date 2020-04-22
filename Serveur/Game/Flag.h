@@ -4,7 +4,7 @@
 #include <string>
 #include <mutex>
 
-#include "Vec3.hpp"
+#include "Vec3.h"
 
 class Flag {
     public:

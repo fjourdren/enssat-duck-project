@@ -1,7 +1,7 @@
 #include <mutex>
 
-#include "Flag.hpp"
-#include "Vec3.hpp"
+#include "Flag.h"
+#include "Vec3.h"
 
 Flag::Flag(int id, std::string type, std::string sound, Vec3 m_Position, Vec3 m_Orientation) : _id(id), _type(type), _sound(sound), _m_Position(m_Position), _m_Orientation(m_Orientation) {
 
