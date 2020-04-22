@@ -9,15 +9,21 @@
 #include <iostream>
 #include <stdlib.h>
 
-#include <utils.h>
-#include "Scene.h"
+#include <unistd.h>
 
+#include <utils.h>
+
+#include "Scene.h"
+#include "ClientSocket.h"
+
+#include "Consts.h"
 
 /**
  * Scène à dessiner
  * NB: son constructeur doit être appelé après avoir initialisé OpenGL
  **/
 Scene* scene = nullptr;
+ClientSocket* cs = nullptr;
 
 /**
  * Callback pour GLFW : prendre en compte la taille de la vue OpenGL
@@ -102,9 +108,7 @@ void error_callback(int error, const char* description)
 }
 
 
-/** point d'entrée du programme **/
-int main(int argc,char **argv)
-{
+void startGame() {
     // initialisation de GLFW
     if (!glfwInit()) {
         std::cerr << "Failed to initialize GLFW" << std::endl;
@@ -146,9 +150,8 @@ int main(int argc,char **argv)
     alListener3f(AL_POSITION, 0, 0, 0);
     alListener3f(AL_VELOCITY, 0, 0, 0);
 
-    // création de la scène => création des objets...
-    scene = new Scene();
-    //debugGLFatal("new Scene()");
+    // init de la scene
+    scene->init();
 
     // enregistrement des fonctions callbacks
     glfwSetFramebufferSizeCallback(window, onSurfaceChanged);
@@ -156,6 +159,7 @@ int main(int argc,char **argv)
     glfwSetMouseButtonCallback(window, onMouseButton);
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
     glfwSetKeyCallback(window, onKeyboard);
+
 
     // affichage du mode d'emploi
     std::cout << "Usage:" << std::endl;
@@ -171,5 +175,49 @@ int main(int argc,char **argv)
         glfwPollEvents();
     } while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && !glfwWindowShouldClose(window));
 
+}
+
+
+/** point d'entrée du programme **/
+int main(int argc, char **argv)
+{
+    // Préparation des entrées utilisateurs
+    char* ip;
+    int port;
+
+    try {
+        ip = argv[1];
+        port = std::stoi(argv[2]);
+    } catch(std::exception const & e) {
+        std::cerr << "ERREUR : Conversion des entrées utilisateurs impossibles." << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+
+
+    // création du thread socket client et connexion au serveur de jeu
+    cs = new ClientSocket(ip, port);
+
+    // création de la scène => création des objets...
+    scene = new Scene();
+    cs->setScene(scene);
+    //debugGLFatal("new Scene()");
+
+    // Démarrage de la connexion et handle des paquets
+    cs->startThread();
+
+
+    // attente des informations du serveur essentiels au démarrage du jeu
+    while(cs->getIdClient() == 0 && scene->getGameState() == UNDEFINED) {
+        std::cout << "En attente des informations depuis le serveur..." << std::endl;
+        usleep(10000); // 10ms
+    }
+
+    std::cout << "Connexion établie, démarrage du jeu..." << std::endl;
+
+
+    // Démarrage du jeu dans le thread principal
+    startGame();
+    
     return EXIT_SUCCESS;
 }

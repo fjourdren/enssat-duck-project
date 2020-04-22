@@ -10,6 +10,7 @@
 #include "Duck.h"
 #include "Ground.h"
 
+#include "Consts.h"
 
 class Scene
 {
@@ -40,14 +41,20 @@ private:
     double m_MousePrecX;
     double m_MousePrecY;
 
+    GameState _state = UNDEFINED;
+
 
 public:
-
-    /** constructeur, crée les objets 3D à dessiner */
+    /** constructeur */
     Scene();
 
     /** destructeur, libère les ressources */
     ~Scene();
+
+    /**
+    Réalise toutes les opérations d'init de l'objet + crée les objets 3D à dessiner
+    */
+    void init(); // on créer cette classe pour initialiser le constructeur avant (sans avoir les includes) et ainsi pouvoir utiliser les pointeurs vers Scene
 
     /**
      * appelée quand la taille de la vue OpenGL change
@@ -88,6 +95,10 @@ public:
 
     /** Dessine l'image courante */
     void onDrawFrame();
+
+    // getter & setter
+    GameState getGameState();
+    void setGameState(GameState newState);
 };
 
 #endif
