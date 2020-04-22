@@ -8,6 +8,9 @@
 #include <MaterialTexture.h>
 #include <gl-matrix.h>
 
+#include <AL/al.h>
+#include <AL/alc.h>
+#include <AL/alut.h>
 
 class Duck: public Mesh
 {

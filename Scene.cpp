@@ -16,10 +16,14 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include <vector> 
+#include <vector>
+
+#include "Consts.h"
 
 /** constructeur */
-Scene::Scene()
+Scene::Scene() {}
+
+void Scene::init()
 {
     //Paramètres de lecture du fichier
     configFile = "configuration.txt";
@@ -43,20 +47,24 @@ Scene::Scene()
         while(std::getline(buffer, token, ':')){
             std::getline(buffer, token, ':');
             soundDuck = token;
+
             std::getline(buffer, token, ':');
             position[0] = atoi(token.c_str());
             std::getline(buffer, token, ':');
             position[1] = atoi(token.c_str());
             std::getline(buffer, token, ':');
             position[2] = atoi(token.c_str());
+
             std::getline(buffer, token, ':');
             orientation[0] = atoi(token.c_str());
             std::getline(buffer, token, ':');
             orientation[2] = atoi(token.c_str());
             std::getline(buffer, token, ':');
             orientation[3] = atoi(token.c_str());
+            
             posVector = posVector + 1;
         }
+
         // Affectation des paramètres au canard
         Duck* duck = new Duck(soundDuck);
         duck->setPosition(vec3::fromValues(position[0], position[1], position[2]));
@@ -64,14 +72,11 @@ Scene::Scene()
         duck->setPosDuck(posVector);
         duck->setDraw(false);
         duck->setSound(true);
+
         // Changement de case du vector
         m_duck.push_back(duck);
-        
-        
-
     }
     
-
 
 
 
@@ -280,4 +285,15 @@ Scene::~Scene()
             delete duck;
     }
     delete m_Ground;
+}
+
+
+
+// Getter & Setter GameState
+GameState Scene::getGameState() {
+    return this->_state;
+}
+
+void Scene::setGameState(GameState newState) {
+    this->_state = newState;
 }

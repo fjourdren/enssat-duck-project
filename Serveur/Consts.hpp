@@ -1,0 +1,7 @@
+#ifndef DEF_CONSTS
+#define DEF_CONSTS
+
+#define DEFAULT_SOCKET_BUFFER 1024
+#define DEFAULT_CHAR_DELIMITER ':'
+
+#endif

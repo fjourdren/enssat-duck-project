@@ -1,0 +1,8 @@
+#ifndef DEF_CONFIG
+#define DEF_CONFIG
+
+#define DEFAULT_SOCKET_BUFFER 1024
+#define DEFAULT_CHAR_DELIMITER ':'
+enum GameState { UNDEFINED, INIT, RUN, FINISHED };
+
+#endif
