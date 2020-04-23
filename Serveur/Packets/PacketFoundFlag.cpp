@@ -37,9 +37,9 @@ void PacketFoundFlag::action(ClientSession* cs) {
     // si le flag a été trouvé
     if(f != nullptr) {
         // si il n'est pas dans la liste des flags trouvés
-        if(gamemanager->flagFounded(this->_flagId) == false) {
+        if(f->getFound() == false) {
             // on rajoute le flag aux flags trouvés
-            gamemanager->addFlagFound(this->_flagId);
+            f->setFound(true);
 
             // on broadcast à tous les clients
             std::string contentPacket = this->constructString(DEFAULT_CHAR_DELIMITER);
@@ -49,10 +49,10 @@ void PacketFoundFlag::action(ClientSession* cs) {
             std::cout << "[Game] Le canard " << this->_flagId << " a été trouvé par le joueur " << this->_idSender << "." << std::endl;
 
             // tous les flags ont ils étaient trouvés ? Si oui => fin de la partie
-            if(gamemanager->getFlagsFound().size() >= gamemanager->getFlags().size()) {
+            /*if(gamemanager->getFlagsFound().size() >= gamemanager->getFlags().size()) {
                 // TODO
                 std::cout << "[Game] Tous les canards ont été trouvés." << std::endl;
-            }
+            }*/
         }
     } else {
         std::cout << "[Game] Flag non trouvé." << std::endl;

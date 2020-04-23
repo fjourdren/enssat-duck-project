@@ -13,7 +13,6 @@ class GameManager {
         void restartCounter();  // redémarrage du timer de la partie
         double calculateTime(); // calcul du temps écoulé depuis le début de la partie
         Flag* getFlagById(int flagId); // récupère le pointeur flag par rapport à son ID
-        bool flagFounded(int id);
 
 
         // getter & setter de l'état de la partie
@@ -26,12 +25,6 @@ class GameManager {
         bool removeFlag(int id);
         bool removeFlag(Flag* flagToRemove);
         void clearFlags();
-
-        // getter & setter flags found
-        void addFlagFound(int id);
-        std::vector<int> getFlagsFound();
-        bool removeFlagFound(int id);
-        void clearFlagsFound();
 
         // singleton
         static GameManager *getinstance() {
@@ -48,7 +41,6 @@ class GameManager {
         clock_t _counter; // date début de la partie
         GameState _state = INIT;
         std::vector<Flag*> _flags;
-        std::vector<int> _flagsFound;
 };
 
 #endif
