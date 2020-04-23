@@ -21,12 +21,12 @@ class ClientSocket {
         void setIdClient(unsigned int newIdClient);
         Scene* getScene();
         void setScene(Scene* newScene);
-        char* _ip;
 
     private:
         std::thread _thread;
         Scene* _scene;
         unsigned int _idClient = 0;
+        char* _ip;
         int _port;
         bool _running = false; // bool pour savoir si le thread doit continue ou non
         int _sock;  // id du socket vers le serveur

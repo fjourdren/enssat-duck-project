@@ -17,6 +17,7 @@ class ClientSession {
         void close(); // fermeture du socket de ClientSession
         void closeAndDestroy(); // fermeture du socket et destruction de la session
         unsigned int getSocket(); // getter socket
+        TCPServerSocket* getTcpServerSocket();
 
     private:
         TCPServerSocket* _tcpServerSocket;

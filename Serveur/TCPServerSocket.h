@@ -13,7 +13,9 @@ class TCPServerSocket {
     public:
         TCPServerSocket(int port);
         void start();
+        void readFlagConfig(std::string configFileName);
         void run();
+        void broadcast(std::string contentPacket);
         void stop();
         void close();
         bool removeSession(int idSession);

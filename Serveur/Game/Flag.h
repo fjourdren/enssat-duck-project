@@ -9,7 +9,6 @@
 class Flag {
     public:
         Flag(int id, std::string type, std::string sound, Vec3 m_Position, Vec3 m_Orientation);
-
         int getId();
         void setId(int newId);
         std::string getSound();
