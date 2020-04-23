@@ -22,7 +22,13 @@ void Flag::setId(int newId) {
 
 
 std::string Flag::getSound() {
-    return this->_sound;
+    std::string output;
+
+    this->_mutex.lock();
+    output = this->_sound;
+    this->_mutex.unlock();
+
+    return output;
 }
 
 void Flag::setSound(std::string newSound) {
@@ -34,7 +40,13 @@ void Flag::setSound(std::string newSound) {
 
 
 Vec3 Flag::getM_Position() {
-    return this->_m_Position;
+    Vec3 output;
+
+    this->_mutex.lock();
+    output = this->_m_Position;
+    this->_mutex.unlock();
+
+    return output;
 }
 
 void Flag::setM_Position(Vec3 newM_Position) {
@@ -46,7 +58,13 @@ void Flag::setM_Position(Vec3 newM_Position) {
 
 
 Vec3 Flag::getM_Orientation() {
-    return this->_m_Orientation;
+    Vec3 output;
+
+    this->_mutex.lock();
+    output = this->_m_Orientation;
+    this->_mutex.unlock();
+
+    return output;
 }
 
 void Flag::setM_Orientation(Vec3 newM_Orientation) {
@@ -58,7 +76,13 @@ void Flag::setM_Orientation(Vec3 newM_Orientation) {
 
 
 bool Flag::getFound() {
-    return this->_found;
+    bool output;
+
+    this->_mutex.lock();
+    output = this->_found;
+    this->_mutex.unlock();
+
+    return output;
 }
 
 void Flag::setFound(bool newFound) {

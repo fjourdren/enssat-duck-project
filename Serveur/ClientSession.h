@@ -2,6 +2,7 @@
 #define DEF_CLIENTSESSION
 
 #include <thread>
+#include <mutex>
 
 #include "TCPServerSocket.h"
 
@@ -20,6 +21,7 @@ class ClientSession {
         TCPServerSocket* getTcpServerSocket();
 
     private:
+        std::mutex _mutex;
         TCPServerSocket* _tcpServerSocket;
         unsigned int _id; // id de la session
         std::thread _thread;

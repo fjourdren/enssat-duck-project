@@ -6,6 +6,8 @@
 
 #include "Vec3.h"
 
+#include <mutex>
+
 class Flag {
     public:
         Flag(int id, std::string type, std::string sound, Vec3 m_Position, Vec3 m_Orientation, bool found = false);

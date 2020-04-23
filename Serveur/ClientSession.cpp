@@ -23,7 +23,13 @@ ClientSession::ClientSession(TCPServerSocket *TCPServerSocket, unsigned int id, 
 
 
 int ClientSession::getId() {
-	return this->_id;
+	int output;
+
+	this->_mutex.lock();
+	output = this->_id;
+    this->_mutex.unlock();
+
+	return output;
 }
 
 
@@ -48,7 +54,9 @@ void ClientSession::startThread() {
 
 // force l'arret du thread
 void ClientSession::stopThread() {
+	this->_mutex.lock();
 	this->_running = false;
+    this->_mutex.unlock();	
 }
 
 
@@ -171,10 +179,22 @@ void* ClientSession::run(ClientSession* cs) {
 
 // getter socket pour connaitre l'état actuel du socket
 unsigned int ClientSession::getSocket() {
-	return this->_sock;
+	unsigned int output;
+
+	this->_mutex.lock();
+	output = this->_sock;
+    this->_mutex.unlock();
+
+	return output;
 }
 
 
 TCPServerSocket* ClientSession::getTcpServerSocket() {
-	return this->_tcpServerSocket;
+	TCPServerSocket* output;
+
+	this->_mutex.lock();
+	output = this->_tcpServerSocket;
+    this->_mutex.unlock();
+
+	return output;
 }
