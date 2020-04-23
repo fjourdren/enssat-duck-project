@@ -11,6 +11,10 @@
 #include <vector>
 #include <errno.h>
 
+#include <fstream>
+#include <sstream>
+#include <iostream>
+
 #include <string.h>
 
 #include "TCPServerSocket.h"
@@ -18,8 +22,12 @@
 
 #include "Consts.h"
 
+#include "Game/GameManager.h"
+#include "Game/Vec3.h"
+#include "Game/Flag.h"
+
 TCPServerSocket::TCPServerSocket(int port): _port(port) {
-    
+
 }
 
 
@@ -58,7 +66,73 @@ void TCPServerSocket::start() {
         std::cout << "[Serveur] Écoute en cours sur le port " << this->_port << std::endl;
     }
 
+
+    // lecture du fichier de configuration
+    this->readFlagConfig("configuration.txt");
+
+    // Démarrage du serveur
     this->run();
+}
+
+
+// lecture du fichier de configuration contenant l'ensemble des flags
+void TCPServerSocket::readFlagConfig(std::string configFileName) {
+    // Paramètres de lecture du fichier
+    std::fstream file;
+    std::string line;
+    std::string token;
+
+    // Paramètres du flag (objectif)
+    std::string soundDuck;
+    std::string type = "d";
+    Vec3 position = Vec3();
+    Vec3 orientation = Vec3();
+    int idFlag = 0;
+
+    // Ouverture du fichier
+    file.open(configFileName); 
+
+    // Lecture du fichier
+    while(getline(file, line)) {
+        std::istringstream buffer(line);
+
+        // Lecture ligne par ligne et affectation
+        while(std::getline(buffer, token, ':')){
+            std::getline(buffer, token, ':');
+            soundDuck = token;
+
+
+            std::getline(buffer, token, ':');
+            position.setX(atoi(token.c_str()));
+
+            std::getline(buffer, token, ':');
+            position.setY(atoi(token.c_str()));
+
+            std::getline(buffer, token, ':');
+            position.setZ(atoi(token.c_str()));
+
+
+
+            std::getline(buffer, token, ':');
+            orientation.setX(atoi(token.c_str()));
+
+            std::getline(buffer, token, ':');
+            orientation.setY(atoi(token.c_str()));
+
+            std::getline(buffer, token, ':');
+            orientation.setZ(atoi(token.c_str()));
+            
+
+            idFlag = idFlag + 1;
+        }
+
+
+        Flag* f = new Flag(idFlag, type, soundDuck, position, orientation);
+
+
+        // Changement de case du vector
+        GameManager::getinstance()->addFlag(f);
+    }
 }
 
 
@@ -87,24 +161,38 @@ void TCPServerSocket::run() { // fonction pour accepter la connexion de nouveau 
 }
 
 
+// broadcast d'un paquet à toutes les sessions
+void TCPServerSocket::broadcast(std::string contentPacket) {
+    // vérification de la longueur du paquet
+    if(contentPacket.size() + 1 > DEFAULT_SOCKET_BUFFER) {
+        std::cout << "[Handler] Construction de ce paquet impossible (chaine de caractère trop longue)." << std::endl;
+    } else {
+        // si le paquet a la bonne taille, on l'envoi à toutes les sessions
+        for(ClientSession* session: this->_sessions) {
+            session->send(contentPacket);
+        }
+    }
+}
+
+
+// arret du thread
 void TCPServerSocket::stop() {
     this->_running = false;
 }
 
 
+// fermeture du socket et de toutes les sessions
 void TCPServerSocket::close() {
     // Arret de toures les threads sessions
-    auto sessionStop = this->_sessions.begin();
-	while (sessionStop != this->_sessions.end()) {
-        (*sessionStop)->stopThread();
+    for(ClientSession* sessionStop: this->_sessions) {
+        sessionStop->stopThread();
     }
 
 
     // Attente des threads et fermeture des sockets
-    auto sessionWait = this->_sessions.begin();
-	while (sessionWait != this->_sessions.end()) {
-        (*sessionWait)->waitThread();
-        (*sessionWait)->close();
+    for(ClientSession* sessionWait: this->_sessions) {
+        sessionWait->waitThread();
+        sessionWait->close();
     }
 
 

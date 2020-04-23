@@ -66,11 +66,12 @@ void ClientSession::waitThread() {
 
 // envoie d'un message
 int ClientSession::send(std::string message) {
-	std::cout << "[ClientSession " << this->_id << "] Envoi : " << message << std::endl;
     int code = ::send(this->_sock, message.c_str(), (message.size() + 1), 0); // :: pour ne pas utiliser le send de la classe
     if(code < 0) {
         std::cout << "[ClientSession " << this->_id << "] Erreur lors de l'envoi." << std::endl;
-    }
+    } else {
+		//std::cout << "[ClientSession " << this->_id << "] Envoi : " << message << std::endl;
+	}
 
     return code;
 }
@@ -171,4 +172,9 @@ void* ClientSession::run(ClientSession* cs) {
 // getter socket pour connaitre l'état actuel du socket
 unsigned int ClientSession::getSocket() {
 	return this->_sock;
+}
+
+
+TCPServerSocket* ClientSession::getTcpServerSocket() {
+	return this->_tcpServerSocket;
 }

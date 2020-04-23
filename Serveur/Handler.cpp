@@ -13,7 +13,7 @@
 #include "Consts.h"
 
 #include "./Packets/Packet.h"
-#include "./Packets/PacketDemo.h"
+#include "./Packets/PacketFoundFlag.h"
 
 // reconstruit le message en objet puis exécute les actions
 void Handler::handle(ClientSession* cs, std::string message) {
@@ -26,15 +26,14 @@ void Handler::handle(ClientSession* cs, std::string message) {
 
 
 Packet* Handler::buildPacket(std::string message) {
-    Packet* outputPacket;
+    Packet* outputPacket = nullptr;
     std::vector<std::string> parts = Handler::split(message, DEFAULT_CHAR_DELIMITER);
 
     // reconstruction des objets en objet
-    if(parts[0] == "PacketDemo") {
-        outputPacket = new PacketDemo(std::stoi(parts[1]), parts[2]); // uuidUser, message
+    if(parts[0] == "foundFlag") {
+        outputPacket = new PacketFoundFlag(std::stoi(parts[1]), std::stoi(parts[2])); // idSender, flagId
     } else {
         std::cout << "[Handler] Construction de ce paquet impossible (erreur de type)." << std::endl;
-        return NULL;
     }
 
     return outputPacket;

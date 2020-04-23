@@ -14,6 +14,7 @@
 #include "Packet.h"
 #include "PacketInitConnection.h"
 #include "PacketSyncGame.h"
+#include "PacketFoundFlag.h"
 
 // reconstruit le message en objet puis exécute les actions
 void Handler::handle(ClientSocket* cs, std::string message) {
@@ -26,7 +27,7 @@ void Handler::handle(ClientSocket* cs, std::string message) {
 
 
 Packet* Handler::buildPacket(std::string message) {
-    Packet* outputPacket;
+    Packet* outputPacket = nullptr;
     std::vector<std::string> parts = Handler::split(message, DEFAULT_CHAR_DELIMITER);
 
     // reconstruction des objets en objet
@@ -35,8 +36,10 @@ Packet* Handler::buildPacket(std::string message) {
     } else if(parts[0] == "syncGame") {
         GameState state = static_cast<GameState>(std::stoi(parts[2]));
         outputPacket = new PacketSyncGame(std::stoi(parts[1]), state); // secondes, gamestate
+    } else if(parts[0] == "foundFlag") {
+        outputPacket = new PacketFoundFlag(std::stoi(parts[1]), std::stoi(parts[2])); // idSender, flagId
     } else {
-        return NULL;
+        std::cout << "[Handler] Construction de ce paquet impossible (erreur de type)." << std::endl;
     }
 
     return outputPacket;

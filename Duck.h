@@ -32,7 +32,11 @@ private:
     /** position du canard dans le vector*/
     int posDuck;
 
-    bool m_Draw, m_Sound;
+    bool m_Draw = false;
+    bool m_Sound;
+
+
+    int _duckId; // ID du canard pour le serveur
 
 public:
 
@@ -90,6 +94,12 @@ public:
 =     */
     void setDraw(bool b);
 
+
+    /**
+     * récupère la valeur de m_draw
+     */
+    bool getDraw();
+
     /**
      * modifie la propriete de son
 =     */
@@ -100,6 +110,17 @@ public:
      * @param light : instance de Light spécifiant les caractéristiques de la lampe
      */
     void setLight(Light* light);
+
+
+    /**
+     * Récupérer l'id du canard côté serveur
+    */
+    int getId();
+
+    /**
+     * Affecte un id au canard
+    */
+    void setId(int newid);
 };
 
 #endif

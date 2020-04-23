@@ -85,6 +85,11 @@ void Duck::setDraw(bool b)
 	m_Draw = b;
 }
 
+bool Duck::getDraw()
+{
+	return m_Draw;
+}
+
 void Duck::setSound(bool b)
 {
 	if (m_Sound && !b) alSourceStop(source);
@@ -161,6 +166,17 @@ int Duck::getPosDuck()
 void Duck::setPosDuck(int position)
 {
     posDuck = position;
+}
+
+
+int Duck::getId()
+{
+    return this->_duckId;
+}
+
+void Duck::setId(int newid)
+{
+    this->_duckId = newid;
 }
 
 

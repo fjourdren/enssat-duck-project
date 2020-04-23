@@ -201,6 +201,7 @@ int main(int argc, char **argv)
     // création de la scène => création des objets...
     scene = new Scene();
     cs->setScene(scene);
+    scene->setClientSocket(cs);
     //debugGLFatal("new Scene()");
 
     // Démarrage de la connexion et handle des paquets

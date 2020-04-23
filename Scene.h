@@ -12,6 +12,8 @@
 
 #include "Consts.h"
 
+class ClientSocket;
+
 class Scene
 {
 private:
@@ -42,6 +44,7 @@ private:
     double m_MousePrecY;
 
     GameState _state = UNDEFINED;
+    ClientSocket* _cs;
 
 
 public:
@@ -96,9 +99,17 @@ public:
     /** Dessine l'image courante */
     void onDrawFrame();
 
-    // getter & setter
+    // getter & setter GameState
     GameState getGameState();
     void setGameState(GameState newState);
+
+    // getter & setter m_duck
+    std::vector<Duck*> getDucks();
+    Duck* getDuckById(int duckId);
+
+    // getter & setter client socket (_cs)
+    ClientSocket* getClientSocket();
+    void setClientSocket(ClientSocket* cs);
 };
 
 #endif

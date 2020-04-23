@@ -2,8 +2,6 @@
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
 
-#include <iostream>
-
 #include <AL/al.h>
 #include <AL/alc.h>
 #include <AL/alut.h>
@@ -19,6 +17,8 @@
 #include <vector>
 
 #include "Consts.h"
+
+#include "PacketFoundFlag.h"
 
 /** constructeur */
 Scene::Scene() {}
@@ -72,6 +72,9 @@ void Scene::init()
         duck->setPosDuck(posVector);
         duck->setDraw(false);
         duck->setSound(true);
+        duck->setId(posVector);
+
+        std::cout << "Ajout d'un canard" << std::endl;
 
         // Changement de case du vector
         m_duck.push_back(duck);
@@ -238,15 +241,28 @@ void Scene::onDrawFrame()
     vec4 pos;    
 
     for(Duck *duck : m_duck) {
-        mat4::translate(tmp_v, m_MatV, duck->getPosition());
-        vec4::transformMat4(pos, vec4::fromValues(0,0,0,1), tmp_v);
-        if (vec4::length(pos) < 5) {
-            std::string posDuck = std::to_string(duck->getPosDuck());
-            std::cout<<"Canard " + std::to_string(duck->getPosDuck()) +" trouvé !" <<std::endl;
-            duck->setDraw(true);
+        if(duck->getDraw() == false) {
+            mat4::translate(tmp_v, m_MatV, duck->getPosition());
+            vec4::transformMat4(pos, vec4::fromValues(0,0,0,1), tmp_v);
+
+            //std::cout << vec4::length(pos) << duck->getDraw() << std::endl; (debug, voir la distance par rapport à un canard)
+            if(vec4::length(pos) < 5) {
+                duck->setDraw(true);
+
+                std::string posDuck = std::to_string(duck->getPosDuck());
+                std::cout<< "Requête canard " + std::to_string(duck->getPosDuck()) +" trouvé envoyé." << std::endl;
+
+                PacketFoundFlag* p = new PacketFoundFlag(this->_cs->getIdClient(), duck->getId());
+                std::string content = p->constructString(DEFAULT_CHAR_DELIMITER);
+
+                // vérification de la longueur du paquet
+                if(content.size() + 1 > DEFAULT_SOCKET_BUFFER) {
+                    std::cout << "[Handler] Construction de ce paquet impossible (chaine de caractère trop longue)." << std::endl;
+                } else {
+                    this->_cs->send(content);
+                }
+            }
         }
-
-
     }
 
     /** gestion des lampes **/
@@ -257,7 +273,7 @@ void Scene::onDrawFrame()
     // fournir position et direction en coordonnées caméra aux objets éclairés
     m_Ground->setLight(m_Light);
     for(Duck *duck : m_duck) {
-            duck->setLight(m_Light);
+        duck->setLight(m_Light);
     }
 
 
@@ -296,4 +312,33 @@ GameState Scene::getGameState() {
 
 void Scene::setGameState(GameState newState) {
     this->_state = newState;
+}
+
+
+// getter & setter m_duck
+std::vector<Duck*> Scene::getDucks() {
+    return this->m_duck;
+}
+
+Duck* Scene::getDuckById(int duckId) {
+    Duck* output = nullptr;
+
+    for(Duck* duck: this->m_duck) {
+        if(duck->getId() == duckId) {
+            output = duck;
+            break;
+        }
+    }
+
+    return output;
+}
+
+
+// getter & setter client socket (_cs)
+ClientSocket* Scene::getClientSocket() {
+    return this->_cs;
+}
+
+void Scene::setClientSocket(ClientSocket* cs) {
+    this->_cs = cs;
 }
