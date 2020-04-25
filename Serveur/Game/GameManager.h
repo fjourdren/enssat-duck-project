@@ -9,10 +9,10 @@
 
 class GameManager {
     public:
-        //static GameManager* getinstance();  // get istance du singleton
         void restartCounter();  // redémarrage du timer de la partie
-        double calculateTime(); // calcul du temps écoulé depuis le début de la partie
+        int calculateTime(); // calcul du temps écoulé depuis le début de la partie
         Flag* getFlagById(int flagId); // récupère le pointeur flag par rapport à son ID
+        unsigned int getNbFlagsFound();
 
 
         // getter & setter de l'état de la partie
@@ -26,6 +26,13 @@ class GameManager {
         bool removeFlag(Flag* flagToRemove);
         void clearFlags();
 
+        // getter & setter record
+        int getRecord();
+        void setRecord(int newRecord);
+        void loadRecord();
+        void writeRecord();
+        void newPotencialRecord(int time);
+
         // singleton
         static GameManager *getinstance() {
             if (!_instance)
@@ -38,9 +45,10 @@ class GameManager {
         GameManager(); // mise en privé du constructeur pour forcer à utiliser le singleton
 
         std::mutex _mutex;   // mutex qui protège le singleton
-        clock_t _counter; // date début de la partie
+        std::chrono::time_point<std::chrono::system_clock> _counter; // date début de la partie
         GameState _state = INIT;
         std::vector<Flag*> _flags;
+        int _record;
 };
 
 #endif

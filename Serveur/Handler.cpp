@@ -29,11 +29,15 @@ Packet* Handler::buildPacket(std::string message) {
     Packet* outputPacket = nullptr;
     std::vector<std::string> parts = Handler::split(message, DEFAULT_CHAR_DELIMITER);
 
-    // reconstruction des objets en objet
-    if(parts[0] == "foundFlag") {
-        outputPacket = new PacketFoundFlag(std::stoi(parts[1]), std::stoi(parts[2])); // idSender, flagId
-    } else {
-        std::cout << "[Handler] Construction de ce paquet impossible (erreur de type)." << std::endl;
+    try {
+        // reconstruction des objets en objet
+        if(parts[0] == "foundFlag") {
+            outputPacket = new PacketFoundFlag(std::stoi(parts[1]), std::stoi(parts[2])); // idSender, flagId
+        } else {
+            std::cout << "[Handler] Construction de ce paquet impossible." << std::endl;
+        }
+    } catch(std::exception const & e) {
+        std::cerr << "ERREUR : Reconstruction du paquet impossible." << std::endl;
     }
 
     return outputPacket;

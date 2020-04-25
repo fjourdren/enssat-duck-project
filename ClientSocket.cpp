@@ -53,11 +53,19 @@ void ClientSocket::waitThread() {
 
 // envoi d'un message au serveur
 int ClientSocket::send(std::string message) {
-    std::cout << "[Client] Envoi : " << message << std::endl;
-    int code = ::send(this->_sock, message.c_str(), (message.size() + 1), 0); // :: pour ne pas appeler la méthode locale
-	if(code < 0) {
-		std::cout << "[Client] Erreur lors de l'envoi " << strerror(errno) << "." << std::endl;
-	}
+    int code;
+
+    // vérification de la longueur du paquet
+    if(message.size() + 1 > DEFAULT_SOCKET_BUFFER) {
+        std::cout << "[Handler] Construction de ce paquet impossible (chaine de caractère trop longue)." << std::endl;
+    } else {
+        code = ::send(this->_sock, message.c_str(), (message.size() + 1), 0); // :: pour ne pas appeler la méthode locale
+        if(code < 0) {
+            std::cout << "[Client] Erreur lors de l'envoi " << strerror(errno) << "." << std::endl;
+        } else {
+            std::cout << "[Client] Envoi : " << message << std::endl;
+        }
+    }
 
     return code;
 }

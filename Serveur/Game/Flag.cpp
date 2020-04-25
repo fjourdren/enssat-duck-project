@@ -21,6 +21,24 @@ void Flag::setId(int newId) {
 
 
 
+std::string Flag::getType() {
+    std::string output;
+
+    this->_mutex.lock();
+    output = this->_type;
+    this->_mutex.unlock();
+
+    return output;
+}
+
+void Flag::setType(std::string newType) {
+    this->_mutex.lock();
+    this->_type = newType;
+    this->_mutex.unlock();
+}
+
+
+
 std::string Flag::getSound() {
     std::string output;
 

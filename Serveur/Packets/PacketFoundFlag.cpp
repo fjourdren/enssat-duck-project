@@ -1,9 +1,13 @@
 #include <iostream>
 #include <stdio.h>
 #include <string>
+#include <unistd.h>
 
 #include "Packet.h"
 #include "PacketFoundFlag.h"
+#include "PacketSyncGame.h"
+#include "PacketSpawnFlag.h"
+#include "PacketEndGame.h"
 
 #include "../Game/GameManager.h"
 
@@ -48,11 +52,60 @@ void PacketFoundFlag::action(ClientSession* cs) {
             // on met un message dans la console
             std::cout << "[Game] Le canard " << this->_flagId << " a été trouvé par le joueur " << this->_idSender << "." << std::endl;
 
+
+
             // tous les flags ont ils étaient trouvés ? Si oui => fin de la partie
-            /*if(gamemanager->getFlagsFound().size() >= gamemanager->getFlags().size()) {
-                // TODO
-                std::cout << "[Game] Tous les canards ont été trouvés." << std::endl;
-            }*/
+            if(gamemanager->getNbFlagsFound() == gamemanager->getFlags().size()) {
+                unsigned int time = (unsigned int) gamemanager->calculateTime(); // temps pour trouver tous les canards
+                std::cout << "[Game] Tous les canards ont été trouvés en " << time << " secondes ." << std::endl;
+
+
+                // gestion d'un potentiel nouveau record
+                gamemanager->newPotencialRecord(time);
+
+
+                // envoi de endgame
+                unsigned int nbCanard = gamemanager->getFlags().size();
+
+                PacketEndGame* packetEndGame = new PacketEndGame(nbCanard, time, gamemanager->getRecord()); // TODO record
+                std::string contentPacketEndGame = packetEndGame->constructString(DEFAULT_CHAR_DELIMITER);
+                cs->getTcpServerSocket()->broadcast(contentPacketEndGame);
+
+                usleep(100000); // attente entre chaque envoi de message
+
+                // passage de la partie en état INIT
+                PacketSyncGame* packetSyncINIT = new PacketSyncGame(gamemanager->getRecord(), INIT);
+                std::string contentPacketSyncINIT = packetSyncINIT->constructString(DEFAULT_CHAR_DELIMITER);
+                cs->getTcpServerSocket()->broadcast(contentPacketSyncINIT);
+
+                usleep(10000);
+
+                // chargement de la config
+                gamemanager->clearFlags();
+                cs->getTcpServerSocket()->readFlagConfig("configuration.txt");
+
+                usleep(10000);
+
+                // envoie des canards aux clients
+                std::vector<Flag*> flags = gamemanager->getFlags();
+                for(Flag* flag: flags) {
+                    PacketSpawnFlag packetFlag = PacketSpawnFlag(flag->getId(), flag->getType(), flag->getSound(), flag->getM_Position(), flag->getM_Orientation(), flag->getFound());
+                    std::string contentPacketFlag = packetFlag.constructString(DEFAULT_CHAR_DELIMITER);
+                    cs->getTcpServerSocket()->broadcast(contentPacketFlag);
+                    usleep(10000);
+                }
+
+                usleep(10000);
+
+                // passage de la partie en état RUN
+                PacketSyncGame* packetSyncRUN = new PacketSyncGame(gamemanager->getRecord(), RUN);
+                std::string contentPacketSyncRUN = packetSyncRUN->constructString(DEFAULT_CHAR_DELIMITER);
+                cs->getTcpServerSocket()->broadcast(contentPacketSyncRUN);
+
+
+                // démarage du compteur de la nouvelle partie
+                GameManager::getinstance()->restartCounter();
+            }
         }
     } else {
         std::cout << "[Game] Flag non trouvé." << std::endl;
