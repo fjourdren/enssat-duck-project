@@ -70,6 +70,13 @@ void TCPServerSocket::start() {
     // lecture du fichier de configuration
     this->readFlagConfig("configuration.txt");
 
+    // lecture du record
+    GameManager* gm = GameManager::getinstance();
+    gm->loadRecord();
+
+    // démarage du compteur de la partie
+    gm->restartCounter();
+
     // Démarrage du serveur
     this->run();
 }
@@ -164,13 +171,8 @@ void TCPServerSocket::run() { // fonction pour accepter la connexion de nouveau 
 // broadcast d'un paquet à toutes les sessions
 void TCPServerSocket::broadcast(std::string contentPacket) {
     // vérification de la longueur du paquet
-    if(contentPacket.size() + 1 > DEFAULT_SOCKET_BUFFER) {
-        std::cout << "[Handler] Construction de ce paquet impossible (chaine de caractère trop longue)." << std::endl;
-    } else {
-        // si le paquet a la bonne taille, on l'envoi à toutes les sessions
-        for(ClientSession* session: this->_sessions) {
-            session->send(contentPacket);
-        }
+    for(ClientSession* session: this->_sessions) {
+        session->send(contentPacket);
     }
 }
 

@@ -31,12 +31,10 @@ private:
     mat4 m_MatV;
     mat4 m_MatVM;
     mat4 m_MatTMP;
+    
 
     // caméra table tournante
-    float m_Azimut;
-    float m_Elevation;
-    float m_Distance;
-    vec3 m_Center;
+    
 
     // souris
     bool m_Clicked;
@@ -48,6 +46,15 @@ private:
 
 
 public:
+    // caméra table tournante
+    float m_Azimut;
+    float m_Elevation;
+    float m_Distance;
+
+    // matrices de transformation des objets de la scène (déplacement)
+    vec3 m_Center;
+    
+
     /** constructeur */
     Scene();
 
@@ -106,6 +113,8 @@ public:
     // getter & setter m_duck
     std::vector<Duck*> getDucks();
     Duck* getDuckById(int duckId);
+    void addDuck(Duck* d);
+    void clearDucks();
 
     // getter & setter client socket (_cs)
     ClientSocket* getClientSocket();

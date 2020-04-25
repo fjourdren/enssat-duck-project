@@ -29,11 +29,5 @@ std::string PacketDemo::constructString(char delimiter) {
 void PacketDemo::action(ClientSession* cs) {
     this->_message += "-b";
     std::string contentPacket = this->constructString(DEFAULT_CHAR_DELIMITER);
-
-    // vérification de la longueur du paquet
-    if(contentPacket.size() + 1 > DEFAULT_SOCKET_BUFFER) {
-        std::cout << "[Handler] Construction de ce paquet impossible (chaine de caractère trop longue)." << std::endl;
-    } else {
-        cs->send(contentPacket);
-    }
+    cs->send(contentPacket);
 }

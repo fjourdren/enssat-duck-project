@@ -14,6 +14,10 @@
 
 #include "Packets/PacketInitConnection.h"
 #include "Packets/PacketSyncGame.h"
+#include "Packets/PacketSpawnFlag.h"
+
+#include "Game/Flag.h"
+#include "Game/GameManager.h"
 
 using namespace std;
 
@@ -74,12 +78,19 @@ void ClientSession::waitThread() {
 
 // envoie d'un message
 int ClientSession::send(std::string message) {
-    int code = ::send(this->_sock, message.c_str(), (message.size() + 1), 0); // :: pour ne pas utiliser le send de la classe
-    if(code < 0) {
-        std::cout << "[ClientSession " << this->_id << "] Erreur lors de l'envoi." << std::endl;
+	int code;
+
+	// vérification de la longueur du paquet
+    if(message.size() + 1 > DEFAULT_SOCKET_BUFFER) {
+        std::cout << "[Handler] Construction de ce paquet impossible (chaine de caractère trop longue)." << std::endl;
     } else {
-		//std::cout << "[ClientSession " << this->_id << "] Envoi : " << message << std::endl;
-	}
+        code = ::send(this->_sock, message.c_str(), (message.size() + 1), 0); // :: pour ne pas utiliser le send de la classe
+		if(code < 0) {
+			std::cout << "[ClientSession " << this->_id << "] Erreur lors de l'envoi." << std::endl;
+		} else {
+			std::cout << "[ClientSession " << this->_id << "] Envoi : " << message << std::endl;
+		}
+    }
 
     return code;
 }
@@ -120,26 +131,27 @@ void* ClientSession::run(ClientSession* cs) {
 	// Création du paquet pour envoyer son ID au client
 	PacketInitConnection* packetInit = new PacketInitConnection(cs->_id);
 	std::string contentPacketInit = packetInit->constructString(DEFAULT_CHAR_DELIMITER);
-
-	// vérification de la longueur du paquet
-    if(contentPacketInit.size() + 1 > DEFAULT_SOCKET_BUFFER) {
-        std::cout << "[Handler] Construction de ce paquet impossible (chaine de caractère trop longue)." << std::endl;
-    } else {
-        cs->send(contentPacketInit);
-    }
+    cs->send(contentPacketInit);
 
 
 
 	// Création du paquet pour envoyer le chronométrage et l'état de la partie à l'utilisateur
-	PacketSyncGame* packetSync = new PacketSyncGame(0, RUN);
+	GameManager* gm = GameManager::getinstance();
+	PacketSyncGame* packetSync = new PacketSyncGame(gm->getRecord(), RUN);
 	std::string contentPacketSync = packetSync->constructString(DEFAULT_CHAR_DELIMITER);
+    cs->send(contentPacketSync);
 
-	// vérification de la longueur du paquet
-    if(contentPacketSync.size() + 1 > DEFAULT_SOCKET_BUFFER) {
-        std::cout << "[Handler] Construction de ce paquet impossible (chaine de caractère trop longue)." << std::endl;
-    } else {
-        cs->send(contentPacketSync);
-    }
+
+	usleep(100000); // tempo (100ms), le temps que le client se prépare
+
+	// envoi des emplacements de flags
+	GameManager* gamemanager = GameManager::getinstance();
+    std::vector<Flag*> flags = gamemanager->getFlags();
+	for(Flag* flag: flags) {
+		PacketSpawnFlag packetFlag = PacketSpawnFlag(flag->getId(), flag->getType(), flag->getSound(), flag->getM_Position(), flag->getM_Orientation(), flag->getFound());
+		std::string contentPacketFlag = packetFlag.constructString(DEFAULT_CHAR_DELIMITER);
+		cs->send(contentPacketFlag);
+	}
 
 
 

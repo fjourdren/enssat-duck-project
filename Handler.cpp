@@ -15,6 +15,8 @@
 #include "PacketInitConnection.h"
 #include "PacketSyncGame.h"
 #include "PacketFoundFlag.h"
+#include "PacketSpawnFlag.h"
+#include "PacketEndGame.h"
 
 // reconstruit le message en objet puis exécute les actions
 void Handler::handle(ClientSocket* cs, std::string message) {
@@ -30,16 +32,27 @@ Packet* Handler::buildPacket(std::string message) {
     Packet* outputPacket = nullptr;
     std::vector<std::string> parts = Handler::split(message, DEFAULT_CHAR_DELIMITER);
 
-    // reconstruction des objets en objet
-    if(parts[0] == "initConnection") {
-        outputPacket = new PacketInitConnection(std::stoi(parts[1])); // uuidUser
-    } else if(parts[0] == "syncGame") {
-        GameState state = static_cast<GameState>(std::stoi(parts[2]));
-        outputPacket = new PacketSyncGame(std::stoi(parts[1]), state); // secondes, gamestate
-    } else if(parts[0] == "foundFlag") {
-        outputPacket = new PacketFoundFlag(std::stoi(parts[1]), std::stoi(parts[2])); // idSender, flagId
-    } else {
-        std::cout << "[Handler] Construction de ce paquet impossible (erreur de type)." << std::endl;
+    try {
+        // reconstruction des objets en objet
+        if(parts[0] == "initConnection") {
+            outputPacket = new PacketInitConnection(std::stoi(parts[1])); // uuidUser
+        } else if(parts[0] == "syncGame") {
+            GameState state = static_cast<GameState>(std::stoi(parts[2]));
+            outputPacket = new PacketSyncGame(std::stoi(parts[1]), state); // secondes, gamestate
+        } else if(parts[0] == "foundFlag") {
+            outputPacket = new PacketFoundFlag(std::stoi(parts[1]), std::stoi(parts[2])); // idSender, flagId
+        } else if(parts[0] == "spawnFlag") {
+            vec3 position = vec3::fromValues(std::stod(parts[4]), std::stod(parts[5]), std::stod(parts[6]));
+            vec3 rotation = vec3::fromValues(std::stod(parts[7]), std::stod(parts[8]), std::stod(parts[9]));
+            bool found = (std::stoi(parts[10]) == 1);
+            outputPacket = new PacketSpawnFlag(std::stoi(parts[1]), parts[2], parts[3], position, rotation, found); // id, type, sound, position, rotation, found
+        } else if(parts[0] == "endGame") {
+            outputPacket = new PacketEndGame(std::stoi(parts[1]), std::stoi(parts[2]), std::stoi(parts[3])); // nbCanard, time, record
+        } else {
+            std::cout << "[Handler] Construction de ce paquet impossible." << std::endl;
+        }
+    } catch(std::exception const & e) {
+        std::cerr << "ERREUR : Reconstruction du paquet impossible." << std::endl;
     }
 
     return outputPacket;

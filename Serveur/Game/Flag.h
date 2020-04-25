@@ -13,6 +13,8 @@ class Flag {
         Flag(int id, std::string type, std::string sound, Vec3 m_Position, Vec3 m_Orientation, bool found = false);
         int getId();
         void setId(int newId);
+        std::string getType();
+        void setType(std::string newType);
         std::string getSound();
         void setSound(std::string newSound);
         Vec3 getM_Position();

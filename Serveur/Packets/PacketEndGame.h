@@ -1,5 +1,5 @@
-#ifndef DEF_PACKETSYNCGAME
-#define DEF_PACKETSYNCGAME
+#ifndef DEF_PACKETENDGAME
+#define DEF_PACKETENDGAME
 
 #include <string>
 
@@ -9,14 +9,15 @@
 #include "../Consts.h"
 #include "../Game/Consts.h"
 
-class PacketSyncGame : public Packet {
+class PacketEndGame : public Packet {
     public:
-        PacketSyncGame(int record, GameState state);
+        PacketEndGame(unsigned int nbCanard, int time, int record);
         virtual std::string constructString(char delimiter); // construction du paquet en une chaine de caractère envoyable sur le réseau (sérialisation)
         //virtual void action(ClientSession* cs); // method qui indique les actions à réaliser lorsque le paquet est reçu
     private:
+        unsigned int _nbCanard;
+        int _time;
         int _record;
-        GameState _state;
 };
 
 #endif

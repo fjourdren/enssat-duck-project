@@ -241,26 +241,24 @@ void Scene::onDrawFrame()
     vec4 pos;    
 
     for(Duck *duck : m_duck) {
+        // si le canard n'a pas été trouvé
         if(duck->getDraw() == false) {
             mat4::translate(tmp_v, m_MatV, duck->getPosition());
             vec4::transformMat4(pos, vec4::fromValues(0,0,0,1), tmp_v);
 
             //std::cout << vec4::length(pos) << duck->getDraw() << std::endl; (debug, voir la distance par rapport à un canard)
+            
+            // si le joueur est à < 5 d'un canard => le joueur trouve le canard
             if(vec4::length(pos) < 5) {
                 duck->setDraw(true);
 
                 std::string posDuck = std::to_string(duck->getPosDuck());
                 std::cout<< "Requête canard " + std::to_string(duck->getPosDuck()) +" trouvé envoyé." << std::endl;
 
+                // on informe le serveur que on a trouvé un canard
                 PacketFoundFlag* p = new PacketFoundFlag(this->_cs->getIdClient(), duck->getId());
                 std::string content = p->constructString(DEFAULT_CHAR_DELIMITER);
-
-                // vérification de la longueur du paquet
-                if(content.size() + 1 > DEFAULT_SOCKET_BUFFER) {
-                    std::cout << "[Handler] Construction de ce paquet impossible (chaine de caractère trop longue)." << std::endl;
-                } else {
-                    this->_cs->send(content);
-                }
+                this->_cs->send(content);
             }
         }
     }
@@ -288,7 +286,7 @@ void Scene::onDrawFrame()
 
     // dessiner le canard en mouvement
     for(Duck *duck : m_duck) {
-            duck->onRender(m_MatP, m_MatV);
+        duck->onRender(m_MatP, m_MatV);
     }
 
 }
@@ -332,6 +330,16 @@ Duck* Scene::getDuckById(int duckId) {
 
     return output;
 }
+
+// Ajout du'un canard dans la liste
+void Scene::addDuck(Duck* d) {
+    this->m_duck.push_back(d);
+}
+
+void Scene::clearDucks() {
+    this->m_duck.clear();
+}
+
 
 
 // getter & setter client socket (_cs)
