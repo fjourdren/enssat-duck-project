@@ -182,15 +182,19 @@ void startGame() {
 int main(int argc, char **argv)
 {
     // Préparation des entrées utilisateurs
-    char* ip;
-    int port;
+    std::string ipstring = "127.0.0.1";
+    char* ip((char*) ipstring.c_str());
+    int port(25000);
 
-    try {
-        ip = argv[1];
-        port = std::stoi(argv[2]);
-    } catch(std::exception const & e) {
-        std::cerr << "ERREUR : Conversion des entrées utilisateurs impossibles." << std::endl;
-        exit(EXIT_FAILURE);
+    // conversion du port passé en paramètre en int
+    if(argc >= 2) {
+        try {
+            ip = argv[1];
+            port = std::stoi(argv[2]);
+        } catch(std::exception const & e) {
+            std::cerr << "ERREUR : Conversion des entrées utilisateurs impossibles." << std::endl;
+            exit(EXIT_FAILURE);
+        }
     }
 
 

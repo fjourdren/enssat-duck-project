@@ -12,6 +12,9 @@
 
 #include "Consts.h"
 
+#include "FlagToSpawn.h"
+
+// empèche les appels en boucle
 class ClientSocket;
 
 class Scene
@@ -41,8 +44,13 @@ private:
     double m_MousePrecX;
     double m_MousePrecY;
 
+
+    // === gestion socket ===
     GameState _state = UNDEFINED;
     ClientSocket* _cs;
+
+    // canards à spawn
+    std::vector<FlagToSpawn*> _flagsToSpawn;
 
 
 public:
@@ -105,6 +113,10 @@ public:
 
     /** Dessine l'image courante */
     void onDrawFrame();
+
+
+    /** ajout d'un flag en attente de spwawn dans la boucle principale **/
+    void addFlagToSpawn(FlagToSpawn* ds);
 
     // getter & setter GameState
     GameState getGameState();

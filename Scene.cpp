@@ -19,13 +19,14 @@
 #include "Consts.h"
 
 #include "PacketFoundFlag.h"
+#include "FlagToSpawn.h"
 
 /** constructeur */
 Scene::Scene() {}
 
 void Scene::init()
 {
-    //Paramètres de lecture du fichier
+    /*//Paramètres de lecture du fichier
     configFile = "configuration.txt";
     std::fstream file;
     std::string line;
@@ -78,7 +79,7 @@ void Scene::init()
 
         // Changement de case du vector
         m_duck.push_back(duck);
-    }
+    }*/
     
 
 
@@ -221,6 +222,25 @@ void Scene::onKeyDown(unsigned char code)
  */
 void Scene::onDrawFrame()
 {
+    // Si il y a des flags en attente de spawn dans la scène (car le spawn dans la scène est obligatoirement effectué dans la boucle principale)
+    for(FlagToSpawn* ds: this->_flagsToSpawn) {
+        // si l'élément à spawn est un canard
+        if(ds->_type == "d") {
+            Duck* d = new Duck(ds->_sound);
+            d->setPosition(ds->_position);
+            d->setOrientation(ds->_rotation);
+            d->setPosDuck(1);
+            d->setDraw(false);
+            d->setSound(true);
+            d->setId(ds->_id);
+
+            this->m_duck.push_back(d);
+        }
+
+        std::cout << "[Game] spawn d'un objet." << std::endl;
+    }
+    this->_flagsToSpawn.clear();
+
     /** préparation des matrices **/
 
     // positionner la caméra
@@ -292,14 +312,26 @@ void Scene::onDrawFrame()
 }
 
 
+
+/**
+ * Fonction pour ajouter d'un flag (objet à trouver) à spawn dans la boucle principale
+ **/
+void Scene::addFlagToSpawn(FlagToSpawn* ds) {
+    this->_flagsToSpawn.push_back(ds);
+}
+
+
 /** supprime tous les objets de cette scène */
 Scene::~Scene()
 {
     for(Duck *duck : m_duck) {
-            delete duck;
+        delete duck;
     }
+
     delete m_Ground;
 }
+
+
 
 
 

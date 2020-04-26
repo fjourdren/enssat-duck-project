@@ -2,8 +2,6 @@
 #include <stdio.h>
 #include <string>
 
-#include "Duck.h"
-
 #include "Packet.h"
 #include "PacketSpawnFlag.h"
 
@@ -15,18 +13,7 @@ PacketSpawnFlag::PacketSpawnFlag(int id, std::string type, std::string sound, ve
 
 
 void PacketSpawnFlag::action(ClientSocket* cs) {
-    // si on veut un flag de type cannard
-    if(this->_type == "d") {
-        //Duck* duck = new Duck(this->_sound);
-        /*duck->setPosition(this->_position);
-        duck->setOrientation(this->_rotation);
-        duck->setPosDuck(1);
-        duck->setDraw(this->_found);
-        duck->setSound(true);
-        duck->setId(this->_id);*/
-
-        //cs->getScene()->addDuck(duck);
-        std::cout << "[Game] Ajout d'un canard envoyé par le serveur." << std::endl;
-    }
-    
+    // création d'un flag en attente de spawn et ajout à la liste des flags en attente de spawn (car spawn dans la boucle principale obligatoire !)
+    FlagToSpawn* ds = new FlagToSpawn(this->_id, this->_type, this->_sound, this->_position, this->_rotation, this->_found);
+    cs->getScene()->addFlagToSpawn(ds);
 }
