@@ -1,2 +1,0 @@
-d:data/Duck-quacking-sound.wav:-10:0:-5:0:45:12
-d:data/Duck-quacking-sound.wav:-11:0:-5:0:0:12

@@ -15,6 +15,7 @@
 #include <sstream>
 #include <iostream>
 #include <vector>
+#include <mutex>
 
 #include "Consts.h"
 
@@ -223,16 +224,17 @@ void Scene::onKeyDown(unsigned char code)
 void Scene::onDrawFrame()
 {
     // Si il y a des flags en attente de spawn dans la scène (car le spawn dans la scène est obligatoirement effectué dans la boucle principale)
+    this->_mutex.lock();
     for(FlagToSpawn* ds: this->_flagsToSpawn) {
         // si l'élément à spawn est un canard
         if(ds->_type == "d") {
             Duck* d = new Duck(ds->_sound);
             d->setPosition(ds->_position);
             d->setOrientation(ds->_rotation);
-            d->setPosDuck(1);
-            d->setDraw(false);
-            d->setSound(true);
+            d->setDraw(ds->_found);
+            d->setSound(!ds->_found); // non de _found car on arrète de jouer le son lorsque l'élément est trouvé
             d->setId(ds->_id);
+            d->setPosDuck(this->m_duck.size());
 
             this->m_duck.push_back(d);
         }
@@ -240,6 +242,7 @@ void Scene::onDrawFrame()
         std::cout << "[Game] spawn d'un objet." << std::endl;
     }
     this->_flagsToSpawn.clear();
+    this->_mutex.unlock();
 
     /** préparation des matrices **/
 
@@ -273,7 +276,6 @@ void Scene::onDrawFrame()
                 duck->setDraw(true);
 
                 std::string posDuck = std::to_string(duck->getPosDuck());
-                std::cout<< "Requête canard " + std::to_string(duck->getPosDuck()) +" trouvé envoyé." << std::endl;
 
                 // on informe le serveur que on a trouvé un canard
                 PacketFoundFlag* p = new PacketFoundFlag(this->_cs->getIdClient(), duck->getId());
@@ -314,10 +316,32 @@ void Scene::onDrawFrame()
 
 
 /**
+ * Fonction pour réinitialiser la caméra
+ **/
+void Scene::resetCam() {
+    this->_mutex.lock();
+
+    // réalisation d'une action en fonction du nouvel état
+    this->m_Azimut = 20.0;
+    this->m_Elevation = 20.0;
+    this->m_Distance = 10.0;
+
+
+    // initialiser les matrices
+    this->m_Center = vec3::create();
+
+    this->_mutex.unlock();
+}
+
+
+
+/**
  * Fonction pour ajouter d'un flag (objet à trouver) à spawn dans la boucle principale
  **/
 void Scene::addFlagToSpawn(FlagToSpawn* ds) {
+    this->_mutex.lock();
     this->_flagsToSpawn.push_back(ds);
+    this->_mutex.unlock();
 }
 
 
@@ -337,48 +361,70 @@ Scene::~Scene()
 
 // Getter & Setter GameState
 GameState Scene::getGameState() {
-    return this->_state;
+    GameState output;
+
+    this->_mutex.lock();
+    output = this->_state;
+    this->_mutex.unlock();
+
+    return output;
 }
 
 void Scene::setGameState(GameState newState) {
+    this->_mutex.lock();
     this->_state = newState;
+    this->_mutex.unlock();
 }
 
 
 // getter & setter m_duck
 std::vector<Duck*> Scene::getDucks() {
-    return this->m_duck;
+    std::vector<Duck*> output;
+
+    this->_mutex.lock();
+    output = this->m_duck;
+    this->_mutex.unlock();
+
+    return output;
 }
 
 Duck* Scene::getDuckById(int duckId) {
     Duck* output = nullptr;
 
+    this->_mutex.lock();
     for(Duck* duck: this->m_duck) {
         if(duck->getId() == duckId) {
             output = duck;
             break;
         }
     }
+    this->_mutex.unlock();
 
     return output;
 }
 
-// Ajout du'un canard dans la liste
-void Scene::addDuck(Duck* d) {
-    this->m_duck.push_back(d);
-}
 
 void Scene::clearDucks() {
+    this->_mutex.lock();
     this->m_duck.clear();
+    this->_mutex.unlock();
 }
 
 
 
 // getter & setter client socket (_cs)
 ClientSocket* Scene::getClientSocket() {
-    return this->_cs;
+    ClientSocket* output;
+
+    this->_mutex.lock();
+    output = this->_cs;
+    this->_mutex.unlock();
+
+    return output;
 }
 
 void Scene::setClientSocket(ClientSocket* cs) {
+    this->_mutex.lock();
     this->_cs = cs;
+    this->_mutex.unlock();
 }
