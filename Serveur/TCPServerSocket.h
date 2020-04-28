@@ -12,8 +12,9 @@ class ClientSession;
 class TCPServerSocket {
     public:
         TCPServerSocket(int port);
-        void start();
+        void start(std::string configFile);
         void readFlagConfig(std::string configFileName);
+        void readFlagConfigJSON(std::string configFileNameJson);
         void run();
         void broadcast(std::string contentPacket);
         void stop();

@@ -17,10 +17,17 @@
 
 #include <string.h>
 
+#include <nlohmann/json.hpp>
+
+// for convenience
+using json = nlohmann::json;
+
 #include "TCPServerSocket.h"
 #include "ClientSession.h"
 
 #include "Consts.h"
+
+#include "Utils.h"
 
 #include "Game/GameManager.h"
 #include "Game/Vec3.h"
@@ -31,7 +38,7 @@ TCPServerSocket::TCPServerSocket(int port): _port(port) {
 }
 
 
-void TCPServerSocket::start() {
+void TCPServerSocket::start(std::string configFile) {
     // init vars
     int opt = 1;
        
@@ -68,7 +75,22 @@ void TCPServerSocket::start() {
 
 
     // lecture du fichier de configuration
-    this->readFlagConfig("configuration.txt");
+    if(!checkIfFileExists(configFile)) {
+        std::cout << "[Serveur] Ce fichier de configuration n'existe pas." << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    if(endWith(configFile, ".json")) {
+        std::cout << "[Serveur] Chargement de " << configFile << " (type JSON)." << std::endl;
+        this->readFlagConfigJSON(configFile);
+    } else if(endWith(configFile, ".txt")) {
+        std::cout << "[Serveur] Chargement de " << configFile << " (type TXT)." << std::endl;
+        this->readFlagConfig(configFile);
+    } else {
+        std::cout << "[Serveur] Ce type de configuration n'est pas pris en charge." << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
 
     // lecture du record
     GameManager* gm = GameManager::getinstance();
@@ -82,7 +104,7 @@ void TCPServerSocket::start() {
 }
 
 
-// lecture du fichier de configuration contenant l'ensemble des flags
+// lecture d'un fichier de configuration contenant l'ensemble des flags
 void TCPServerSocket::readFlagConfig(std::string configFileName) {
     // Paramètres de lecture du fichier
     std::fstream file;
@@ -105,6 +127,8 @@ void TCPServerSocket::readFlagConfig(std::string configFileName) {
 
         // Lecture ligne par ligne et affectation
         while(std::getline(buffer, token, ':')){
+            idFlag = idFlag + 1; // on commence les id à 1
+
             std::getline(buffer, token, ':');
             soundDuck = token;
 
@@ -128,18 +152,59 @@ void TCPServerSocket::readFlagConfig(std::string configFileName) {
 
             std::getline(buffer, token, ':');
             orientation.setZ(atoi(token.c_str()));
-            
-
-            idFlag = idFlag + 1;
         }
 
-
+        
+        // initialisation du flag
         Flag* f = new Flag(idFlag, type, soundDuck, position, orientation);
 
 
-        // Changement de case du vector
+        // Ajout du flag à la liste
         GameManager::getinstance()->addFlag(f);
     }
+}
+
+
+// lecture d'un fichier de configuration AU FORMAT JSON contenant l'ensemble des flags
+void TCPServerSocket::readFlagConfigJSON(std::string configFileNameJson) {
+    //init 
+    // Paramètres du flag (objectif)
+    std::string type;
+    std::string soundDuck;
+    Vec3 position = Vec3();
+    Vec3 orientation = Vec3();
+    int idFlag = 0;
+
+
+    std::ifstream configFile(configFileNameJson, std::ifstream::binary); // lecture du fichier de config json
+
+    json j = json::parse(configFile);  // parsing des informations
+
+    for (json::iterator it = j.begin(); it != j.end(); ++it) {
+        //std::cout << (*it)["id"].get<int>() << "\n";
+
+        idFlag      = idFlag + 1; // on commence les id à 1
+
+        type        = (*it)["type"];
+        soundDuck   = (*it)["sound"];
+
+        position    = Vec3((*it)["position"]["x"], (*it)["position"]["y"], (*it)["position"]["z"]);
+        orientation = Vec3((*it)["orientation"]["x"], (*it)["orientation"]["y"], (*it)["orientation"]["z"]);
+
+
+
+        
+
+
+        // initialisation du flag
+        Flag* f = new Flag(idFlag, type, soundDuck, position, orientation);
+
+
+        // Ajout du flag à la liste
+        GameManager::getinstance()->addFlag(f);
+    }
+    
+    configFile.close();
 }
 
 

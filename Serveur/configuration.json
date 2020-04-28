@@ -1,0 +1,44 @@
+[
+    {
+        "type": "d",
+        "sound": "data/Duck-quacking-sound.wav",
+        "position": {
+            "x": -10,
+            "y": 0,
+            "z": -5
+        },
+        "orientation": {
+            "x": 0,
+            "y": 45,
+            "z": 12
+        }
+    },
+    {
+        "type": "d",
+        "sound": "data/Duck-quacking-sound.wav",
+        "position": {
+            "x": 0,
+            "y": 0,
+            "z": -10
+        },
+        "orientation": {
+            "x": 0,
+            "y": 0,
+            "z": 12
+        }
+    },
+    {
+        "type": "d",
+        "sound": "data/Duck-quacking-sound.wav",
+        "position": {
+            "x": 10,
+            "y": 0,
+            "z": -5
+        },
+        "orientation": {
+            "x": 0,
+            "y": 90,
+            "z": 0
+        }
+    }
+]
