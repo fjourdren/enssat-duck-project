@@ -6,29 +6,122 @@
 #include <iterator>
 #include <vector>
 #include <string.h>
+#include <unistd.h>
+#include <queue>
 
 #include "Handler.h"
-#include "ClientSession.h"
+
+#include "Utils.h"
 
 #include "Consts.h"
 
 #include "./Packets/Packet.h"
 #include "./Packets/PacketFoundFlag.h"
 
-// reconstruit le message en objet puis exécute les actions
-void Handler::handle(ClientSession* cs, std::string message) {
-    Packet* p = Handler::buildPacket(message); // on utilise un pointeur pour facilement par la suite vérifier qu'il a bien été construit
 
-    if(p != NULL) {  // l'utilisation d'un pointeur permet de réaliser cette condition
-        p->action(cs);
-        delete p; // comme on utilise new pour obtenir un pointeur, on suprime l'objet après son utilisation
+Handler::Handler(ClientSession* clientSession): _clientSession(clientSession) {
+
+}
+
+void Handler::startThread() {
+    this->_running = true;
+
+    std::thread threadInstance(Handler::run, this);
+    this->_thread = std::move(threadInstance); // déplace le thread vers la variable de l'instance
+    this->_thread.detach();
+}
+
+void Handler::stopThread() {
+    this->_mutex.lock();
+	this->_running = false;
+    this->_mutex.unlock();
+}
+
+void Handler::waitThread() {
+    this->_thread.join();
+}
+
+
+// exécution du thread qui va réaliser les actions liés au message. Obligatoirement en static, on passe donc this en paramètre
+void Handler::run(Handler* handler) {
+    while(handler->getRunning()) {
+        if(handler->getQueueSize() > 0) { // si il y a des messages en attente
+            std::string message = handler->dequeueMessage();
+
+            std::cout << "[Handler ClientSession " << handler->getClientSession()->getId() << "] Réception : " << message << std::endl;
+
+            // construction
+            Packet* p = Handler::buildPacket(message); // on utilise un pointeur pour facilement par la suite vérifier qu'il a bien été construit
+
+            // exécution action
+            if(p != NULL) {  // l'utilisation d'un pointeur permet de réaliser cette condition
+                p->action(handler->getClientSession());
+                delete p; // comme on utilise new pour obtenir un pointeur, on suprime l'objet après son utilisation
+            }
+        } else {
+            usleep(10); // processeur au repos si aucun message n'a été trouvé
+        }
+        
     }
 }
 
 
+// gestion de la queue
+std::string Handler::dequeueMessage() {
+    std::string output = "";
+
+    this->_mutex.lock();
+    output = this->_queue.front();
+    this->_queue.pop();
+    this->_mutex.unlock();
+
+    return output;
+}
+
+void Handler::queueMessage(std::string message) {
+    this->_mutex.lock();
+    this->_queue.push(message);
+    this->_mutex.unlock();
+}
+
+int Handler::getQueueSize() {
+    int output = 0;
+
+    this->_mutex.lock();
+    output = this->_queue.size();
+    this->_mutex.unlock();
+
+    return output;
+}
+
+
+// getter ClientSession
+ClientSession* Handler::getClientSession() {
+    ClientSession* output;
+
+    this->_mutex.lock();
+    output = this->_clientSession;
+    this->_mutex.unlock();
+
+    return output;
+}
+
+
+bool Handler::getRunning() {
+    bool output;
+
+    this->_mutex.lock();
+    output = this->_running;
+    this->_mutex.unlock();
+
+    return output;
+}
+
+
+// construction du paquet
 Packet* Handler::buildPacket(std::string message) {
     Packet* outputPacket = nullptr; // l'utilisation d'un pointeur permet de vérifier que l'objet packet a été construit sans erreur. Et si c'est le cas, on ne fait juste rien => permet de ne pas faire crasher l'ensemble des sessions de joueurs.
-    std::vector<std::string> parts = Handler::split(message, DEFAULT_CHAR_DELIMITER);
+    std::vector<std::string> parts = split(message, DEFAULT_CHAR_DELIMITER);
 
     try {
         // reconstruction des objets en objet
@@ -45,18 +138,7 @@ Packet* Handler::buildPacket(std::string message) {
 }
 
 
-// découpe d'un string avec un délimiteur (pour la désérialisation)
-std::vector<std::string> Handler::split(std::string message, char delimiter) {
-    std::vector<std::string> vout;
-    unsigned int start = 0, end = 0;
 
-    while(end < message.length()) {
-        end = message.find(delimiter, start);
-        vout.push_back(message.substr(start, end - start));
-        start = end + 1;
-    }
-
-    vout.push_back(message.substr(start));
-
-    return vout;
+Handler::~Handler() {
+    delete this->_clientSession;
 }

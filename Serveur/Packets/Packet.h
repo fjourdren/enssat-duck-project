@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "../ClientSession.h"
+class ClientSession;
 
 // classe parente de tous les paquets échangés
 class Packet {

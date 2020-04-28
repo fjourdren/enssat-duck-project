@@ -6,6 +6,8 @@
 
 #include "TCPServerSocket.h"
 
+#include "Handler.h"
+
 class ClientSession {
     public:
         ClientSession(TCPServerSocket* TCPServerSocket, unsigned int id, int* sock);
@@ -19,10 +21,12 @@ class ClientSession {
         void closeAndDestroy(); // fermeture du socket et destruction de la session
         unsigned int getSocket(); // getter socket
         TCPServerSocket* getTcpServerSocket();
+        Handler* getHandler();
         ~ClientSession();
     private:
         std::mutex _mutex;
         TCPServerSocket* _tcpServerSocket;
+        Handler* _handler;
         unsigned int _id; // id de la session
         std::thread _thread;
         int _sock = -1;  // id du socket vers le client

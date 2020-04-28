@@ -24,6 +24,8 @@ void PacketEndGame::action(ClientSocket* cs) {
             std::cout << "[Game] Vous ne battez pas le record du serveur qui est de  " << this->_record << " secondes." << std::endl;
         }
     }
+
+    std::cout << "[Game] Redémarrage de la partie dans 5 secondes." << std::endl;
 }
 
 

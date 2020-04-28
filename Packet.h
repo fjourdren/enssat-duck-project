@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "ClientSocket.h"
+class ClientSocket;
 
 // classe parente de tous les paquets échangés
 class Packet {

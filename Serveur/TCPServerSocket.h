@@ -12,8 +12,10 @@ class ClientSession;
 class TCPServerSocket {
     public:
         TCPServerSocket(int port);
-        void start(std::string configFile);
-        void readFlagConfig(std::string configFileName);
+        TCPServerSocket(int port, std::string configFile);
+        void start();
+        void readFlagConfig();
+        void readFlagConfigTXT(std::string configFileName);
         void readFlagConfigJSON(std::string configFileNameJson);
         void run();
         void broadcast(std::string contentPacket);
@@ -21,6 +23,11 @@ class TCPServerSocket {
         void close();
         bool removeSession(int idSession);
         bool removeSession(ClientSession* sessionToRemove);
+
+        // getter & setter configFile
+        std::string getConfigFile();
+        void setConfigFile(std::string newConfigFile);
+
         ~TCPServerSocket();
     private:
         bool _running = true;
@@ -30,6 +37,7 @@ class TCPServerSocket {
         int _addrlen = sizeof(this->_address);
         unsigned int _nextSessionId = 1;
         std::vector<ClientSession*> _sessions;
+        std::string _configFile;
 };
 
 #endif

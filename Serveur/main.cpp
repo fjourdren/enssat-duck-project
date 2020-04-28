@@ -21,18 +21,17 @@ int main(int argc, char **argv) {
         }
     }
 
-    // création du socket serveur
-    TCPServerSocket s = TCPServerSocket(port);
 
     // utilisation d'un type de configuration particulier ou non
-    if(argc >= 3) {
-        std::string configFile = convertToString(argv[2], strlen(argv[2]));
-
-        // chargement uniquement de fichiers json ou txt
-        s.start(configFile);
-    } else {
-        s.start("configuration.json"); // sinon chargement du fichier configuration.json par défaut
+    std::string configFile = "configuration.json";
+    if(argc >= 3) { // si il y a un fichier de configuration renseigné par l'utilisateur
+        configFile = convertToString(argv[2], strlen(argv[2]));
     }
+
+
+    // création du socket serveur
+    TCPServerSocket s = TCPServerSocket(port, configFile);
+    s.start();
     
 
     return 0;
