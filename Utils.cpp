@@ -10,4 +10,4 @@ std::string convertToString(char* a, int size) {
     }
 
     return s;
-} 
+}

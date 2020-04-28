@@ -18,8 +18,8 @@ Projet uniquement compatible avec les OS linux.
 Compilation du serveur :
     make
 
-Pour l'exécution sur le port par défaut 25000 on utilise la commande `make run` ou la commande `./main`.
-Pour ne pas utiliser le port par défaut, on utilise la commande `./main 25000`.
+Pour l'exécution sur le port par défaut 25000 et avec le chargement de "configuration.json" on utilise la commande `make run` ou la commande `./main`.
+Pour ne pas utiliser le port par défaut ou charger une autre configuration, on utilise la commande `./main 25000 configuration.txt`.
 
 ### Client
 Compilation du client : `make cleanalllibs && make main`
@@ -42,6 +42,8 @@ Si l'on souhaite configurer l'ip et le port on utilise la commande `./main 127.0
 * Partage des accès aux données critiques entre les threads.
 * Machine à état pour gérer la partie.
 * Système de redémarrage de la partie automatique.
+* Sauvegarde de la configuration en json ou en fichier texte.
+* Arguments pour modifier les paramètres de lancement des programmes.
 
 ## Améliorations
 * Aujourd’hui, la réception est limité à un buffer de taille 1050 (un message d’erreur apparaît si la sérialisation prend trop de caractère). Une des améliorations serait de retirer cette limite.

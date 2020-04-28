@@ -1,4 +1,5 @@
 #include <string>
+#include <fstream>
 
 #include "Utils.h"
 
@@ -10,4 +11,22 @@ std::string convertToString(char* a, int size) {
     }
 
     return s;
-} 
+}
+
+
+bool endWith(std::string fullString, std::string ending) {
+    if (fullString.length() >= ending.length()) {
+        return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
+    } else {
+        return false;
+    }
+}
+
+
+bool checkIfFileExists(std::string file) {
+    std::ifstream ifexfile(file.c_str());
+    if (ifexfile)
+        return true;
+    else
+        return false;
+}
