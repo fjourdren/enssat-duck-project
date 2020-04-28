@@ -27,3 +27,6 @@ std::string PacketEndGame::constructString(char delimiter) {
 
     return result;
 }
+
+
+PacketEndGame::~PacketEndGame() {}

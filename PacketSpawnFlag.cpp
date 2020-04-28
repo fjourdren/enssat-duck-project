@@ -17,3 +17,6 @@ void PacketSpawnFlag::action(ClientSocket* cs) {
     FlagToSpawn* ds = new FlagToSpawn(this->_id, this->_type, this->_sound, this->_position, this->_rotation, this->_found);
     cs->getScene()->addFlagToSpawn(ds);
 }
+
+
+PacketSpawnFlag::~PacketSpawnFlag() {}

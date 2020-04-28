@@ -27,3 +27,6 @@ void Packet::action(ClientSession* cs) {
 
     std::cout << "[Handler] Erreur, un paquet nul a été reçu." << std::endl;
 }
+
+
+Packet::~Packet() {}

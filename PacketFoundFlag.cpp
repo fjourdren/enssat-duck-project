@@ -41,3 +41,6 @@ void PacketFoundFlag::action(ClientSocket* cs) {
         }
     }
 }
+
+
+PacketFoundFlag::~PacketFoundFlag() {}

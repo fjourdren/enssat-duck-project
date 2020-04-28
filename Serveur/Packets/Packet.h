@@ -11,8 +11,8 @@ class Packet {
         Packet();
         Packet(std::string type);
         virtual std::string constructString(char delimiter); // construction du paquet en une chaine de caractère envoyable sur le réseau (sérialisation)
-        virtual void action(ClientSession* cs); // method qui indique les actions à réaliser lorsque le paquet est reçu
-
+        virtual void action(ClientSession* cs); // methode qui indique les actions à réaliser lorsque le paquet est reçu
+        virtual ~Packet(); // Cela permet d'utiliser les destructeurs des classes filles.
     protected:
         std::string _type;        
 };

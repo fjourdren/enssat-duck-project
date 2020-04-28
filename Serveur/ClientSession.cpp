@@ -129,16 +129,16 @@ void* ClientSession::run(ClientSession* cs) {
 
 
 	// Création du paquet pour envoyer son ID au client
-	PacketInitConnection* packetInit = new PacketInitConnection(cs->_id);
-	std::string contentPacketInit = packetInit->constructString(DEFAULT_CHAR_DELIMITER);
+	PacketInitConnection packetInit = PacketInitConnection(cs->_id);
+	std::string contentPacketInit = packetInit.constructString(DEFAULT_CHAR_DELIMITER);
     cs->send(contentPacketInit);
 
 
 
 	// Création du paquet pour envoyer le chronométrage et l'état de la partie à l'utilisateur
 	GameManager* gm = GameManager::getinstance();
-	PacketSyncGame* packetSync = new PacketSyncGame(gm->getRecord(), RUN);
-	std::string contentPacketSync = packetSync->constructString(DEFAULT_CHAR_DELIMITER);
+	PacketSyncGame packetSync = PacketSyncGame(gm->getRecord(), RUN);
+	std::string contentPacketSync = packetSync.constructString(DEFAULT_CHAR_DELIMITER);
     cs->send(contentPacketSync);
 
 
@@ -211,3 +211,6 @@ TCPServerSocket* ClientSession::getTcpServerSocket() {
 
 	return output;
 }
+
+
+ClientSession::~ClientSession() {}

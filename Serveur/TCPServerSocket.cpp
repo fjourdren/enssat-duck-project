@@ -195,6 +195,8 @@ void TCPServerSocket::close() {
     for(ClientSession* sessionWait: this->_sessions) {
         sessionWait->waitThread();
         sessionWait->close();
+
+        delete sessionWait; // supression de la session qui a été initialisé avec new
     }
 
 
@@ -211,6 +213,7 @@ bool TCPServerSocket::removeSession(int idSession) {
 	while (session != this->_sessions.end()) {
         if((*session)->getId() == idSession) {
             this->_sessions.erase(session);
+            delete &session; // destruction de l'objet
             std::cout << "[ClientSession " << idSession << "] Retiré de la liste des sessions." << std::endl;
             return true;
         }
@@ -231,4 +234,12 @@ bool TCPServerSocket::removeSession(ClientSession* sessionToRemove) {
     }
 
     return false;
+}
+
+
+TCPServerSocket::~TCPServerSocket() {
+    // destruction de toutes les sessions, car elles sont instanciés avec new
+    for(ClientSession* s: this->_sessions) {
+        delete s;
+    }
 }

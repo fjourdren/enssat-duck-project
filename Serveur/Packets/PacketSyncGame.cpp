@@ -26,3 +26,6 @@ std::string PacketSyncGame::constructString(char delimiter) {
 
     return result;
 }
+
+
+PacketSyncGame::~PacketSyncGame() {}

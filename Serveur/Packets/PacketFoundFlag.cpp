@@ -67,15 +67,15 @@ void PacketFoundFlag::action(ClientSession* cs) {
                 // envoi de endgame
                 unsigned int nbCanard = gamemanager->getFlags().size();
 
-                PacketEndGame* packetEndGame = new PacketEndGame(nbCanard, time, gamemanager->getRecord()); // TODO record
-                std::string contentPacketEndGame = packetEndGame->constructString(DEFAULT_CHAR_DELIMITER);
+                PacketEndGame packetEndGame = PacketEndGame(nbCanard, time, gamemanager->getRecord()); // TODO record
+                std::string contentPacketEndGame = packetEndGame.constructString(DEFAULT_CHAR_DELIMITER);
                 cs->getTcpServerSocket()->broadcast(contentPacketEndGame);
 
                 usleep(100000); // attente entre chaque envoi de message
 
                 // passage de la partie en état INIT
-                PacketSyncGame* packetSyncINIT = new PacketSyncGame(gamemanager->getRecord(), INIT);
-                std::string contentPacketSyncINIT = packetSyncINIT->constructString(DEFAULT_CHAR_DELIMITER);
+                PacketSyncGame packetSyncINIT = PacketSyncGame(gamemanager->getRecord(), INIT);
+                std::string contentPacketSyncINIT = packetSyncINIT.constructString(DEFAULT_CHAR_DELIMITER);
                 cs->getTcpServerSocket()->broadcast(contentPacketSyncINIT);
 
                 usleep(10000);
@@ -98,8 +98,8 @@ void PacketFoundFlag::action(ClientSession* cs) {
                 usleep(10000);
 
                 // passage de la partie en état RUN
-                PacketSyncGame* packetSyncRUN = new PacketSyncGame(gamemanager->getRecord(), RUN);
-                std::string contentPacketSyncRUN = packetSyncRUN->constructString(DEFAULT_CHAR_DELIMITER);
+                PacketSyncGame packetSyncRUN = PacketSyncGame(gamemanager->getRecord(), RUN);
+                std::string contentPacketSyncRUN = packetSyncRUN.constructString(DEFAULT_CHAR_DELIMITER);
                 cs->getTcpServerSocket()->broadcast(contentPacketSyncRUN);
 
 
@@ -111,3 +111,6 @@ void PacketFoundFlag::action(ClientSession* cs) {
         std::cout << "[Game] Flag non trouvé." << std::endl;
     }
 }
+
+
+PacketFoundFlag::~PacketFoundFlag() {}

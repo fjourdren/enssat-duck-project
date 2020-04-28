@@ -20,16 +20,18 @@
 
 // reconstruit le message en objet puis exécute les actions
 void Handler::handle(ClientSocket* cs, std::string message) {
-    Packet* p = Handler::buildPacket(message);
+    Packet* p = Handler::buildPacket(message); // on utilise un pointeur pour facilement par la suite vérifier qu'il a bien été construit
     
-    if(p != NULL) {
+    if(p != NULL) { // l'utilisation d'un pointeur permet de réaliser cette condition
         p->action(cs);
+
+        delete p; // supression de l'instance packet instancié avec new pour libérer la mémoire
     }
 }
 
 
 Packet* Handler::buildPacket(std::string message) {
-    Packet* outputPacket = nullptr;
+    Packet* outputPacket = nullptr; // on utilise un pointeur pour facilement par la suite vérifier qu'il a bien été construit
     std::vector<std::string> parts = Handler::split(message, DEFAULT_CHAR_DELIMITER);
 
     try {

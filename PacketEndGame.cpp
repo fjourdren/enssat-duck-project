@@ -25,3 +25,6 @@ void PacketEndGame::action(ClientSocket* cs) {
         }
     }
 }
+
+
+PacketEndGame::~PacketEndGame() {}

@@ -36,3 +36,6 @@ double Vec3::getZ() {
 void Vec3::setZ(double newZ) {
     this->_z = newZ;
 }
+
+
+Vec3::~Vec3() {}

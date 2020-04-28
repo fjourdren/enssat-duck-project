@@ -22,8 +22,7 @@ Pour l'exécution sur le port par défaut 25000 on utilise la commande `make run
 Pour ne pas utiliser le port par défaut, on utilise la commande `./main 25000`.
 
 ### Client
-Compilation du client :
-    make cleanalllibs && make main
+Compilation du client : `make cleanalllibs && make main`
 
 Ensuite, `make run` permet d'exécuter le client et de le connecter au serveur avec l'IP et le port par défaut : 127.0.0.1:25000. `./main` a le même comportement.
 Si l'on souhaite configurer l'ip et le port on utilise la commande `./main 127.0.0.1 25000`.
@@ -54,3 +53,4 @@ Si l'on souhaite configurer l'ip et le port on utilise la commande `./main 127.0
 * Afficher le timer en temps réel chez le client.
 * Utiliser Boost ASIO pour être multiplate-forme.
 * Utilisation de protobuf dans les échanges.
+* Optimiser le chargement des modèles 3d et des textures pour les charger une fois et ensuite les partager entre tous les objets.

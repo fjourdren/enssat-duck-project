@@ -11,6 +11,7 @@ class Vec3 {
         void setY(double newY);
         double getZ();
         void setZ(double newZ);
+        ~Vec3();
 
     private:
         double _x;

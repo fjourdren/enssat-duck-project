@@ -23,3 +23,6 @@ std::string Packet::constructString(char delimiter) {
 void Packet::action(ClientSocket* cs) {
     std::cout << "[Handler] Erreur, un paquet nul a été reçu." << std::endl;
 }
+
+
+Packet::~Packet() {}

@@ -16,3 +16,6 @@ PacketInitConnection::PacketInitConnection(unsigned int idSender) : Packet("init
 void PacketInitConnection::action(ClientSocket* cs) {
     cs->setIdClient(this->_idSender);
 }
+
+
+PacketInitConnection::~PacketInitConnection() {}

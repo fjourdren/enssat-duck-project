@@ -20,6 +20,7 @@ class TCPServerSocket {
         void close();
         bool removeSession(int idSession);
         bool removeSession(ClientSession* sessionToRemove);
+        ~TCPServerSocket();
     private:
         bool _running = true;
         int _port;

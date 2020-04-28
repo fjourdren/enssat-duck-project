@@ -239,6 +239,8 @@ void Scene::onDrawFrame()
             this->m_duck.push_back(d);
         }
 
+        delete ds; // supression du flagToSpawn car instancié avec new
+
         std::cout << "[Game] spawn d'un objet." << std::endl;
     }
     this->_flagsToSpawn.clear();
@@ -278,8 +280,8 @@ void Scene::onDrawFrame()
                 std::string posDuck = std::to_string(duck->getPosDuck());
 
                 // on informe le serveur que on a trouvé un canard
-                PacketFoundFlag* p = new PacketFoundFlag(this->_cs->getIdClient(), duck->getId());
-                std::string content = p->constructString(DEFAULT_CHAR_DELIMITER);
+                PacketFoundFlag p = PacketFoundFlag(this->_cs->getIdClient(), duck->getId());
+                std::string content = p.constructString(DEFAULT_CHAR_DELIMITER);
                 this->_cs->send(content);
             }
         }
@@ -352,7 +354,13 @@ Scene::~Scene()
         delete duck;
     }
 
+    // destruction de tous les éléments en attente de spawn
+    for(FlagToSpawn *f : _flagsToSpawn) {
+        delete f;
+    }
+
     delete m_Ground;
+    delete _cs; // destruction de ClientSocket qui est instancié par main mais contenu dans Scene
 }
 
 
@@ -406,6 +414,12 @@ Duck* Scene::getDuckById(int duckId) {
 
 void Scene::clearDucks() {
     this->_mutex.lock();
+
+    // supression de tous les canards créés avec new
+    for(Duck *duck : m_duck) {
+        delete duck;
+    }
+
     this->m_duck.clear();
     this->_mutex.unlock();
 }

@@ -15,6 +15,7 @@ class FlagToSpawn {
         bool _found;
 
         FlagToSpawn(int id, std::string type, std::string sound, vec3 position, vec3 rotation, bool found);
+        ~FlagToSpawn();
 };
 
 #endif

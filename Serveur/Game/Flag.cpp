@@ -108,3 +108,5 @@ void Flag::setFound(bool newFound) {
     this->_found = newFound;
     this->_mutex.unlock();
 }
+
+Flag::~Flag() {}

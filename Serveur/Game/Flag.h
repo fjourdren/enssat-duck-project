@@ -23,6 +23,7 @@ class Flag {
         void setM_Orientation(Vec3 newM_Orientation);
         bool getFound();
         void setFound(bool newFound);
+        ~Flag();
 
     private:
         std::mutex _mutex;   // mutex qui protège le flag

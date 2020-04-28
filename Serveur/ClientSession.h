@@ -19,7 +19,7 @@ class ClientSession {
         void closeAndDestroy(); // fermeture du socket et destruction de la session
         unsigned int getSocket(); // getter socket
         TCPServerSocket* getTcpServerSocket();
-
+        ~ClientSession();
     private:
         std::mutex _mutex;
         TCPServerSocket* _tcpServerSocket;
