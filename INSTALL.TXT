@@ -7,3 +7,7 @@ sudo apt install g++ mesa-utils libglew-dev libglfw3-dev libsdl2-dev libsdl2-ima
 ------------
 make cleanalllibs && make main
 make run
+
+ou
+
+./main 127.0.0.1 25000
