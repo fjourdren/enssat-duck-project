@@ -7,7 +7,6 @@
 
 #include "TCPServerSocket.h"
 #include "ClientSession.h"
-#include "Handler.h"
 #include "Utils.h"
 
 #include "Consts.h"
@@ -22,7 +21,7 @@
 using namespace std;
 
 ClientSession::ClientSession(TCPServerSocket *TCPServerSocket, unsigned int id, int* sock) : _tcpServerSocket(TCPServerSocket), _id(id), _sock(*sock) {
-    
+    this->_handler = new Handler(this);
 }
 
 
@@ -51,7 +50,11 @@ void ClientSession::startThread() {
 
 	std::thread threadInstance(ClientSession::run, this);
     this->_thread = std::move(threadInstance); // déplace le thread vers la variable de l'instance
-    this->_thread.detach();	
+    this->_thread.detach();
+
+
+	// démarage du thread Handler
+	this->_handler->startThread();
 }
 
 
@@ -91,6 +94,8 @@ int ClientSession::send(std::string message) {
 			std::cout << "[ClientSession " << this->_id << "] Envoi : " << message << std::endl;
 		}
     }
+
+	usleep(100); // ajout d'une temporisation pour laisser le temps au client d'ajouer le message à sa queue de traitement
 
     return code;
 }
@@ -134,15 +139,12 @@ void* ClientSession::run(ClientSession* cs) {
     cs->send(contentPacketInit);
 
 
-
 	// Création du paquet pour envoyer le chronométrage et l'état de la partie à l'utilisateur
 	GameManager* gm = GameManager::getinstance();
 	PacketSyncGame packetSync = PacketSyncGame(gm->getRecord(), RUN);
 	std::string contentPacketSync = packetSync.constructString(DEFAULT_CHAR_DELIMITER);
     cs->send(contentPacketSync);
 
-
-	usleep(100000); // tempo (100ms), le temps que le client se prépare
 
 	// envoi des emplacements de flags
 	GameManager* gamemanager = GameManager::getinstance();
@@ -151,7 +153,6 @@ void* ClientSession::run(ClientSession* cs) {
 		PacketSpawnFlag packetFlag = PacketSpawnFlag(flag->getId(), flag->getType(), flag->getSound(), flag->getM_Position(), flag->getM_Orientation(), flag->getFound());
 		std::string contentPacketFlag = packetFlag.constructString(DEFAULT_CHAR_DELIMITER);
 		cs->send(contentPacketFlag);
-		usleep(10);
 	}
 
 
@@ -175,10 +176,10 @@ void* ClientSession::run(ClientSession* cs) {
 			}
 
 		} else {
-			std::cout << "[ClientSession " << cs->_id << "] Réception : " << message << std::endl;
+			std::cout << "[ClientSession " << cs->_id << "] Réception : " << message << "." << std::endl;
 
-			// reconstruction de l'objet et traitement
-			Handler::handle(cs, message);
+			// ajout du message à la queue du handler
+			cs->getHandler()->queueMessage(message);
 
 			message = "";
 		}
@@ -213,4 +214,17 @@ TCPServerSocket* ClientSession::getTcpServerSocket() {
 }
 
 
-ClientSession::~ClientSession() {}
+Handler* ClientSession::getHandler() {
+	Handler* output;
+
+	this->_mutex.lock();
+	output = this->_handler;
+    this->_mutex.unlock();
+
+	return output;
+}
+
+
+ClientSession::~ClientSession() {
+	delete this->_handler;
+}

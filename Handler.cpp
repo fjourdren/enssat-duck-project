@@ -6,10 +6,12 @@
 #include <iterator>
 #include <vector>
 #include <string.h>
+#include <unistd.h>
 
 #include "Handler.h"
 #include "ClientSocket.h"
 #include "Consts.h"
+#include "Utils.h"
 
 #include "Packet.h"
 #include "PacketInitConnection.h"
@@ -18,21 +20,112 @@
 #include "PacketSpawnFlag.h"
 #include "PacketEndGame.h"
 
-// reconstruit le message en objet puis exécute les actions
-void Handler::handle(ClientSocket* cs, std::string message) {
-    Packet* p = Handler::buildPacket(message); // on utilise un pointeur pour facilement par la suite vérifier qu'il a bien été construit
-    
-    if(p != NULL) { // l'utilisation d'un pointeur permet de réaliser cette condition
-        p->action(cs);
 
-        delete p; // supression de l'instance packet instancié avec new pour libérer la mémoire
+Handler::Handler(ClientSocket* clientSocket): _clientSocket(clientSocket) {
+
+}
+
+void Handler::startThread() {
+    this->_running = true;
+    
+    std::thread threadInstance(Handler::run, this);
+    this->_thread = std::move(threadInstance); // déplace le thread vers la variable de l'instance
+    this->_thread.detach();
+}
+
+void Handler::stopThread() {
+    this->_mutex.lock();
+	this->_running = false;
+    this->_mutex.unlock();
+}
+
+void Handler::waitThread() {
+    this->_thread.join();
+}
+
+
+// exécution du thread qui va réaliser les actions liés au message. Obligatoirement en static, on passe donc this en paramètre
+void Handler::run(Handler* handler) {
+    std::cout << "test" << std::endl;
+
+    while(handler->getRunning()) {
+        if(handler->getQueueSize() > 0) { // si il y a des messages en attente
+            std::string message = handler->dequeueMessage();
+
+            std::cout << "[Handler Client] Réception : " << message << std::endl;
+
+            // construction
+            Packet* p = Handler::buildPacket(message); // on utilise un pointeur pour facilement par la suite vérifier qu'il a bien été construit
+
+            // exécution action
+            if(p != NULL) {  // l'utilisation d'un pointeur permet de réaliser cette condition
+                p->action(handler->getClientSocket());
+                delete p; // comme on utilise new pour obtenir un pointeur, on suprime l'objet après son utilisation
+            }
+        } else {
+            usleep(10); // processeur au repos si aucun message n'a été trouvé
+        }
+        
     }
 }
 
 
+// gestion de la queue
+std::string Handler::dequeueMessage() {
+    std::string output = "";
+
+    this->_mutex.lock();
+    output = this->_queue.front();
+    this->_queue.pop();
+    this->_mutex.unlock();
+
+    return output;
+}
+
+void Handler::queueMessage(std::string message) {
+    this->_mutex.lock();
+    this->_queue.push(message);
+    this->_mutex.unlock();
+}
+
+int Handler::getQueueSize() {
+    int output = 0;
+
+    this->_mutex.lock();
+    output = this->_queue.size();
+    this->_mutex.unlock();
+
+    return output;
+}
+
+
+// getter ClientSocket
+ClientSocket* Handler::getClientSocket() {
+    ClientSocket* output;
+
+    this->_mutex.lock();
+    output = this->_clientSocket;
+    this->_mutex.unlock();
+
+    return output;
+}
+
+
+bool Handler::getRunning() {
+    bool output;
+
+    this->_mutex.lock();
+    output = this->_running;
+    this->_mutex.unlock();
+
+    return output;
+}
+
+
+
 Packet* Handler::buildPacket(std::string message) {
     Packet* outputPacket = nullptr; // on utilise un pointeur pour facilement par la suite vérifier qu'il a bien été construit
-    std::vector<std::string> parts = Handler::split(message, DEFAULT_CHAR_DELIMITER);
+    std::vector<std::string> parts = split(message, DEFAULT_CHAR_DELIMITER);
 
     try {
         // reconstruction des objets en objet
@@ -58,21 +151,4 @@ Packet* Handler::buildPacket(std::string message) {
     }
 
     return outputPacket;
-}
-
-
-// découpe d'un string avec un délimiteur (pour la désérialisation)
-std::vector<std::string> Handler::split(std::string message, char delimiter) {
-    std::vector<std::string> vout;
-    unsigned int start = 0, end = 0;
-
-    while(end < message.length()) {
-        end = message.find(delimiter, start);
-        vout.push_back(message.substr(start, end - start));
-        start = end + 1;
-    }
-
-    vout.push_back(message.substr(start));
-
-    return vout;
 }

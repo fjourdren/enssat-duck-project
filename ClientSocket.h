@@ -7,6 +7,8 @@
 
 #include "Scene.h"
 
+#include "Handler.h"
+
 class ClientSocket {
     public:
         ClientSocket(char* ip, int port);
@@ -21,10 +23,12 @@ class ClientSocket {
         void setIdClient(unsigned int newIdClient);
         Scene* getScene();
         void setScene(Scene* newScene);
+        Handler* getHandler();
         ~ClientSocket();
     private:
         std::thread _thread;
         Scene* _scene;
+        Handler* _handler;
         unsigned int _idClient = 0;
         char* _ip;
         int _port;

@@ -67,24 +67,22 @@ void PacketFoundFlag::action(ClientSession* cs) {
                 // envoi de endgame
                 unsigned int nbCanard = gamemanager->getFlags().size();
 
-                PacketEndGame packetEndGame = PacketEndGame(nbCanard, time, gamemanager->getRecord()); // TODO record
+                PacketEndGame packetEndGame = PacketEndGame(nbCanard, time, gamemanager->getRecord());
                 std::string contentPacketEndGame = packetEndGame.constructString(DEFAULT_CHAR_DELIMITER);
                 cs->getTcpServerSocket()->broadcast(contentPacketEndGame);
+                sleep(5);
 
-                usleep(100000); // attente entre chaque envoi de message
 
                 // passage de la partie en état INIT
                 PacketSyncGame packetSyncINIT = PacketSyncGame(gamemanager->getRecord(), INIT);
                 std::string contentPacketSyncINIT = packetSyncINIT.constructString(DEFAULT_CHAR_DELIMITER);
                 cs->getTcpServerSocket()->broadcast(contentPacketSyncINIT);
 
-                usleep(10000);
 
                 // chargement de la config
                 gamemanager->clearFlags();
-                cs->getTcpServerSocket()->readFlagConfig("configuration.txt");
+                cs->getTcpServerSocket()->readFlagConfig();
 
-                usleep(10000);
 
                 // envoie des canards aux clients
                 std::vector<Flag*> flags = gamemanager->getFlags();
@@ -92,10 +90,8 @@ void PacketFoundFlag::action(ClientSession* cs) {
                     PacketSpawnFlag packetFlag = PacketSpawnFlag(flag->getId(), flag->getType(), flag->getSound(), flag->getM_Position(), flag->getM_Orientation(), flag->getFound());
                     std::string contentPacketFlag = packetFlag.constructString(DEFAULT_CHAR_DELIMITER);
                     cs->getTcpServerSocket()->broadcast(contentPacketFlag);
-                    usleep(10000);
                 }
 
-                usleep(10000);
 
                 // passage de la partie en état RUN
                 PacketSyncGame packetSyncRUN = PacketSyncGame(gamemanager->getRecord(), RUN);

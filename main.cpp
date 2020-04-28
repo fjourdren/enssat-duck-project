@@ -215,7 +215,7 @@ int main(int argc, char **argv)
     // attente des informations du serveur essentiels au démarrage du jeu
     while(cs->getIdClient() == 0 && scene->getGameState() == UNDEFINED) {
         std::cout << "En attente des informations depuis le serveur..." << std::endl;
-        usleep(10000); // 10ms
+        usleep(100000); // 100ms
     }
 
     std::cout << "Connexion établie, démarrage du jeu..." << std::endl;

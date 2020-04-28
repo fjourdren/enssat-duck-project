@@ -37,8 +37,12 @@ TCPServerSocket::TCPServerSocket(int port): _port(port) {
 
 }
 
+TCPServerSocket::TCPServerSocket(int port, std::string configFile): _port(port), _configFile(configFile) {
 
-void TCPServerSocket::start(std::string configFile) {
+}
+
+
+void TCPServerSocket::start() {
     // init vars
     int opt = 1;
        
@@ -75,21 +79,7 @@ void TCPServerSocket::start(std::string configFile) {
 
 
     // lecture du fichier de configuration
-    if(!checkIfFileExists(configFile)) {
-        std::cout << "[Serveur] Ce fichier de configuration n'existe pas." << std::endl;
-        exit(EXIT_FAILURE);
-    }
-
-    if(endWith(configFile, ".json")) {
-        std::cout << "[Serveur] Chargement de " << configFile << " (type JSON)." << std::endl;
-        this->readFlagConfigJSON(configFile);
-    } else if(endWith(configFile, ".txt")) {
-        std::cout << "[Serveur] Chargement de " << configFile << " (type TXT)." << std::endl;
-        this->readFlagConfig(configFile);
-    } else {
-        std::cout << "[Serveur] Ce type de configuration n'est pas pris en charge." << std::endl;
-        exit(EXIT_FAILURE);
-    }
+    this->readFlagConfig();
 
 
     // lecture du record
@@ -105,7 +95,28 @@ void TCPServerSocket::start(std::string configFile) {
 
 
 // lecture d'un fichier de configuration contenant l'ensemble des flags
-void TCPServerSocket::readFlagConfig(std::string configFileName) {
+void TCPServerSocket::readFlagConfig() {
+    // lecture du fichier de configuration
+    if(!checkIfFileExists(this->_configFile)) {
+        std::cout << "[Serveur] Ce fichier de configuration n'existe pas." << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    if(endWith(this->_configFile, ".json")) {
+        std::cout << "[Serveur] Chargement de " << this->_configFile << " (type JSON)." << std::endl;
+        this->readFlagConfigJSON(this->_configFile);
+    } else if(endWith(this->_configFile, ".txt")) {
+        std::cout << "[Serveur] Chargement de " << this->_configFile << " (type TXT)." << std::endl;
+        this->readFlagConfigTXT(this->_configFile);
+    } else {
+        std::cout << "[Serveur] Ce type de configuration n'est pas pris en charge." << std::endl;
+        exit(EXIT_FAILURE);
+    }
+}
+
+
+// lecture d'un fichier TXT et construction des flags
+void TCPServerSocket::readFlagConfigTXT(std::string configFileName) {
     // Paramètres de lecture du fichier
     std::fstream file;
     std::string line;
@@ -165,7 +176,7 @@ void TCPServerSocket::readFlagConfig(std::string configFileName) {
 }
 
 
-// lecture d'un fichier de configuration AU FORMAT JSON contenant l'ensemble des flags
+// lecture d'un fichier JSON et construction des flags
 void TCPServerSocket::readFlagConfigJSON(std::string configFileNameJson) {
     //init 
     // Paramètres du flag (objectif)
@@ -300,6 +311,17 @@ bool TCPServerSocket::removeSession(ClientSession* sessionToRemove) {
 
     return false;
 }
+
+
+// getter & setter configFile
+std::string TCPServerSocket::getConfigFile(){
+    return this->_configFile;
+}
+
+void TCPServerSocket::setConfigFile(std::string newConfigFile) {
+    this->_configFile = newConfigFile;
+}
+
 
 
 TCPServerSocket::~TCPServerSocket() {

@@ -1,5 +1,6 @@
 #include <string>
 #include <fstream>
+#include <vector>
 
 #include "Utils.h"
 
@@ -29,4 +30,21 @@ bool checkIfFileExists(std::string file) {
         return true;
     else
         return false;
+}
+
+
+// découpe d'un string avec un délimiteur (pour la désérialisation)
+std::vector<std::string> split(std::string message, char delimiter) {
+    std::vector<std::string> vout;
+    unsigned int start = 0, end = 0;
+
+    while(end < message.length()) {
+        end = message.find(delimiter, start);
+        vout.push_back(message.substr(start, end - start));
+        start = end + 1;
+    }
+
+    vout.push_back(message.substr(start));
+
+    return vout;
 }

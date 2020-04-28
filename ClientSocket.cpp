@@ -8,13 +8,12 @@
 #include <string.h>
 
 #include "ClientSocket.h"
-#include "Handler.h"
 #include "Utils.h"
 
 #include "Consts.h"
 
 ClientSocket::ClientSocket(char* ip, int port): _ip(ip), _port(port) {
-    
+    this->_handler = new Handler(this);
 }
 
 
@@ -32,6 +31,9 @@ void ClientSocket::startThread() {
     std::thread threadInstance(ClientSocket::run, this);
     this->_thread = std::move(threadInstance); // déplace le thread dans la variable de l'instance
     this->_thread.detach();
+
+    // démarrage du thread Handler
+	this->_handler->startThread();
 }
 
 
@@ -66,6 +68,8 @@ int ClientSocket::send(std::string message) {
             std::cout << "[Client] Envoi : " << message << std::endl;
         }
     }
+
+    usleep(100); // ajout d'une temporisation pour laisser le temps au serveur d'ajouer le message à sa queue de traitement
 
     return code;
 }
@@ -139,8 +143,8 @@ void* ClientSocket::run(ClientSocket* cs) { // fonction static pour pouvoir êtr
 		} else {
 			std::cout << "[Client] Réception : " << message << std::endl;
 
-            // reconstruction de l'objet et traitement
-			Handler::handle(cs, message);
+            // ajout du message à la queue du handler
+			cs->getHandler()->queueMessage(message);
 
             message = "";
 		}
@@ -174,5 +178,8 @@ void ClientSocket::setScene(Scene* newScene) {
     this->_scene = newScene;
 }
 
+Handler* ClientSocket::getHandler() {
+    return this->_handler;
+}
 
 ClientSocket::~ClientSocket() {}
