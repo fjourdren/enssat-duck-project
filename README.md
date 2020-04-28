@@ -33,6 +33,17 @@ Si l'on souhaite configurer l'ip et le port on utilise la commande `./main 127.0
 * [Flavien JOURDREN](https://github.com/fjourdren)
 * [Hugues WIECZOREK](https://github.com/HuguesWieczorek)
 
+## Diagramme de communication
+client -> serveur:
+foundFlag(idUser, id)
+
+serveur -> client:
+initConnection(idUser)
+syncGame(record, gameState)
+foundFlag(idUser, id)
+spawnFlag(id, type, sound, position, rotation, found)
+endGame(nbCanard, time, record)
+
 ## Fonctionnalités
 * Système de configuration (positions des canards) lu côté serveur puis envoyé aux clients.
 * Synchronisation des canards trouvés entre les clients.
