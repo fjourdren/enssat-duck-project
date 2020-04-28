@@ -25,7 +25,7 @@ DEPS = $(OBJECTS:.o=.d)
 COMPILE_FLAGS = -std=c++11 -Wall -Wextra -g
 INCLUDES = -I include/ -I /usr/local/include
 # Space-separated pkg-config libraries used by this project
-LIBS =
+LIBS = -lpthread -lnlohmann_json
 
 
 
@@ -71,7 +71,7 @@ $(BIN_PATH)/$(BIN_NAME): $(OBJECTS)
 # dependency files to provide header dependencies
 $(BUILD_PATH)/%.o: $(SRC_PATH)/%.$(SRC_EXT)
 	@echo "Compiling: $< -> $@"
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -MP -MMD -c $< -o $@ -lpthread -lnlohmann_json
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -MP -MMD -c $< -o $@ $(LIBS)
 
 
 # exécution du programme
