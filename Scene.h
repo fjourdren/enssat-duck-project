@@ -22,7 +22,7 @@ class Scene
 private:
 
     // objets de la scène
-    std::string configFile;
+    //std::string configFile;
     std::vector<Duck*> m_duck;
     Ground* m_Ground;
 

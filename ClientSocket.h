@@ -21,7 +21,7 @@ class ClientSocket {
         void setIdClient(unsigned int newIdClient);
         Scene* getScene();
         void setScene(Scene* newScene);
-
+        ~ClientSocket();
     private:
         std::thread _thread;
         Scene* _scene;

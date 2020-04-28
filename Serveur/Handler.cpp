@@ -17,16 +17,17 @@
 
 // reconstruit le message en objet puis exécute les actions
 void Handler::handle(ClientSession* cs, std::string message) {
-    Packet* p = Handler::buildPacket(message);
+    Packet* p = Handler::buildPacket(message); // on utilise un pointeur pour facilement par la suite vérifier qu'il a bien été construit
 
-    if(p != NULL) {
+    if(p != NULL) {  // l'utilisation d'un pointeur permet de réaliser cette condition
         p->action(cs);
+        delete p; // comme on utilise new pour obtenir un pointeur, on suprime l'objet après son utilisation
     }
 }
 
 
 Packet* Handler::buildPacket(std::string message) {
-    Packet* outputPacket = nullptr;
+    Packet* outputPacket = nullptr; // l'utilisation d'un pointeur permet de vérifier que l'objet packet a été construit sans erreur. Et si c'est le cas, on ne fait juste rien => permet de ne pas faire crasher l'ensemble des sessions de joueurs.
     std::vector<std::string> parts = Handler::split(message, DEFAULT_CHAR_DELIMITER);
 
     try {

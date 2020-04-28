@@ -22,3 +22,6 @@ std::string PacketInitConnection::constructString(char delimiter) {
 
     return result;
 }
+
+
+PacketInitConnection::~PacketInitConnection() {}

@@ -54,3 +54,6 @@ std::string PacketSyncGame::conversionGameMode(int gm) {
 
     return GameStateString[gm];
 }
+
+
+PacketSyncGame::~PacketSyncGame() {}

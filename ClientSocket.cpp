@@ -173,3 +173,6 @@ Scene* ClientSocket::getScene() {
 void ClientSocket::setScene(Scene* newScene) {
     this->_scene = newScene;
 }
+
+
+ClientSocket::~ClientSocket() {}

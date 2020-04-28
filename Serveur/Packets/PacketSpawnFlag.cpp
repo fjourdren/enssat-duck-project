@@ -45,3 +45,6 @@ std::string PacketSpawnFlag::constructString(char delimiter) {
 
     return result;
 }
+
+
+PacketSpawnFlag::~PacketSpawnFlag() {}

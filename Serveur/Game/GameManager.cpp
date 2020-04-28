@@ -11,11 +11,20 @@
 #include "Consts.h"
 
 
-// initialisation du pointeur de singleton à zéro
+// initialisation du pointeur de singleton à zéro (initialisation possible uniquement dans le code C++, pas dans le header)
 GameManager *GameManager::_instance = nullptr;
 
 
 GameManager::GameManager() {}
+
+
+// fonction getinstance pour le singleton
+GameManager* GameManager::getinstance() {
+    if (!_instance)
+        _instance = new GameManager;
+    return _instance;
+}
+
 
 // Redémarrage du timer de la partie
 void GameManager::restartCounter() {
@@ -107,7 +116,8 @@ bool GameManager::removeFlag(int idToRemove) {
 	while(flag != this->_flags.end()) {
         if((*flag)->getId() == idToRemove) {
             this->_flags.erase(flag);
-            std::cout << "[ClientSession " << (*flag)->getId() << "] Retiré de la liste des drapeaux à trouver." << std::endl;
+            delete &flag; // supression du flag car instancié avec new
+            std::cout << "[ClientSession " << idToRemove << "] Retiré de la liste des drapeaux à trouver." << std::endl;
             output = true;
             break;
         }
@@ -126,6 +136,7 @@ bool GameManager::removeFlag(Flag* flagToRemove) {
 	while(flag != this->_flags.end()) {
         if((*flag)->getId() == flagToRemove->getId()) {
             this->_flags.erase(flag);
+            delete &flag; // supression du flag car instancié avec new
             std::cout << "[ClientSession " << flagToRemove->getId() << "] Retiré de la liste des drapeaux à trouver." << std::endl;
             output = true;
             break;
@@ -138,6 +149,11 @@ bool GameManager::removeFlag(Flag* flagToRemove) {
 
 void GameManager::clearFlags() {
     this->_mutex.lock();
+    // supression de tous les flags car instanciés avec new
+    for(Flag *f : _flags) {
+        delete f;
+    }
+
     this->_flags.clear();
     this->_mutex.unlock();
 }
@@ -166,7 +182,7 @@ void GameManager::loadRecord() {
 
     std::fstream recordFile("record.txt", std::ios_base::in);
 
-    int a;
+    int a = -1;
     while (recordFile >> a) {
         this->_record = a;
         std::cout << "[Utils] Chargement du record : " << a << std::endl;
@@ -193,7 +209,7 @@ void GameManager::newPotencialRecord(int time) {
     gm->loadRecord();
 
     // si il n'y a pas de record précédent
-    if(this->_record == -1 || this->_record == NULL) {
+    if(this->_record == -1) {
         this->_record = time;
 
         // écriture du record
@@ -205,5 +221,19 @@ void GameManager::newPotencialRecord(int time) {
             // écriture du record
             gm->writeRecord();
         }
+    }
+}
+
+
+// permet de détruire l'instance du singleton sans entrer dans des boucles de destruction entrainant un crash
+void GameManager::destroyInstance() {
+    delete GameManager::getinstance(); // auto supression pour être sûr que l'élément n'existe plus (car le singleton l'auto instancie avec NEW) => lance le destructeur qui va libérer le reste
+}
+
+
+GameManager::~GameManager() {
+    // supression de chaque flag car ils sont instanciés avec new dans la classe TCPServerSocket MAIS stoqués dans GameManager
+    for(Flag* flag: this->_flags) {
+        delete flag;
     }
 }
