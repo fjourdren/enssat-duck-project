@@ -2,8 +2,8 @@
 #define SCENE_H
 
 // Définition de la classe Scene
-
 #include <gl-matrix.h>
+#include <mutex>
 
 #include "Light.h"
 
@@ -37,6 +37,10 @@ private:
     
 
     // caméra table tournante
+    float m_Azimut;
+    float m_Elevation;
+    float m_Distance;
+    vec3 m_Center;
     
 
     // souris
@@ -46,6 +50,7 @@ private:
 
 
     // === gestion socket ===
+    std::mutex _mutex;   // mutex pour protéger les éléments modifiés par le thread principal et le thread réseau
     GameState _state = UNDEFINED;
     ClientSocket* _cs;
 
@@ -54,15 +59,6 @@ private:
 
 
 public:
-    // caméra table tournante
-    float m_Azimut;
-    float m_Elevation;
-    float m_Distance;
-
-    // matrices de transformation des objets de la scène (déplacement)
-    vec3 m_Center;
-    
-
     /** constructeur */
     Scene();
 
@@ -114,6 +110,8 @@ public:
     /** Dessine l'image courante */
     void onDrawFrame();
 
+    /** Fonction pour réinitialiser la caméra **/
+    void resetCam();
 
     /** ajout d'un flag en attente de spwawn dans la boucle principale **/
     void addFlagToSpawn(FlagToSpawn* ds);
@@ -125,7 +123,6 @@ public:
     // getter & setter m_duck
     std::vector<Duck*> getDucks();
     Duck* getDuckById(int duckId);
-    void addDuck(Duck* d);
     void clearDucks();
 
     // getter & setter client socket (_cs)

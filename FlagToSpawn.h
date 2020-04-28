@@ -12,9 +12,9 @@ class FlagToSpawn {
         std::string _sound;
         vec3 _position;
         vec3 _rotation;
-        bool _draw;
+        bool _found;
 
-        FlagToSpawn(int id, std::string type, std::string sound, vec3 position, vec3 rotation, bool draw);
+        FlagToSpawn(int id, std::string type, std::string sound, vec3 position, vec3 rotation, bool found);
 };
 
 #endif

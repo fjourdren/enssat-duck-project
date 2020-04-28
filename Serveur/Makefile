@@ -27,6 +27,8 @@ INCLUDES = -I include/ -I /usr/local/include
 # Space-separated pkg-config libraries used by this project
 LIBS =
 
+
+
 .PHONY: default_target
 default_target: release
 
@@ -70,3 +72,8 @@ $(BIN_PATH)/$(BIN_NAME): $(OBJECTS)
 $(BUILD_PATH)/%.o: $(SRC_PATH)/%.$(SRC_EXT)
 	@echo "Compiling: $< -> $@"
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -MP -MMD -c $< -o $@ -lpthread
+
+
+# exécution du programme
+run:	$(BIN_NAME)
+	./$(BIN_NAME)

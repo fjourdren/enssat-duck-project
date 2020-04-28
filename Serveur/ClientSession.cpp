@@ -151,6 +151,7 @@ void* ClientSession::run(ClientSession* cs) {
 		PacketSpawnFlag packetFlag = PacketSpawnFlag(flag->getId(), flag->getType(), flag->getSound(), flag->getM_Position(), flag->getM_Orientation(), flag->getFound());
 		std::string contentPacketFlag = packetFlag.constructString(DEFAULT_CHAR_DELIMITER);
 		cs->send(contentPacketFlag);
+		usleep(10);
 	}
 
 
