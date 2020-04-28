@@ -9,9 +9,11 @@ Projet uniquement compatible avec les OS linux.
 
     FEDORA :
     sudo dnf install gcc-c++ glew-devel glfw-devel SDL2-devel SDL2_image-devel openal-soft-devel freealut-devel freeglut-devel
+    sudo dnf install -y nlohmann-json-devel
 
     DEBIAN :
     sudo apt install g++ mesa-utils libglew-dev libglfw3-dev libsdl2-dev libsdl2-image-dev libopenal-dev libalut-dev freeglut3-dev
+    sudo apt-get install -y nlohmann-json-dev
 
 ## Compilation et Exécution
 ### Serveur
