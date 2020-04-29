@@ -69,3 +69,5 @@ endGame(nbCanard, time, record)
 * Utiliser Boost ASIO pour être multiplate-forme.
 * Utilisation de protobuf dans les échanges.
 * Optimiser le chargement des modèles 3d et des textures pour les charger une fois et ensuite les partager entre tous les objets.
+* Ajouter des queues à l'envoi de message.
+* Ajouter un mutex unique à chaque donnée.
