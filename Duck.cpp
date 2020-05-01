@@ -63,7 +63,7 @@ Duck::Duck(std::string sound): Mesh("Duck")
     // dans un cone d'angle [-inner/2,inner/2] il n'y a pas d'attenuation
     alSourcef(source, AL_CONE_INNER_ANGLE, 10);
     // dans un cone d'angle [-outer/2,outer/2] il y a une attenuation linéaire entre 0 et le gain
-    alSourcef(source, AL_CONE_OUTER_GAIN, 0);
+    alSourcef(source, AL_CONE_OUTER_GAIN, 0); 
     alSourcef(source, AL_CONE_OUTER_ANGLE, 120);
     // à l'extérieur de [-outer/2,outer/2] il y a une attenuation totale
 
