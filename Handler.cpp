@@ -46,8 +46,6 @@ void Handler::waitThread() {
 
 // exécution du thread qui va réaliser les actions liés au message. Obligatoirement en static, on passe donc this en paramètre
 void Handler::run(Handler* handler) {
-    std::cout << "test" << std::endl;
-
     while(handler->getRunning()) {
         if(handler->getQueueSize() > 0) { // si il y a des messages en attente
             std::string message = handler->dequeueMessage();
